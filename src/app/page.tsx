@@ -160,7 +160,7 @@ export default function HomePage() {
         <SecurityWarning className='mb-6' />
         <div className='grid grid-cols-1 lg:grid-cols-4 gap-6'>
           {/* Left Sidebar */}
-          <div className='lg:col-span-1 space-y-6'>
+          <div className='lg:col-span-1 space-y-6 cursor-pointer'>
             <EnvironmentManager
               environments={environments}
               currentEnvironment={currentEnvironment}
