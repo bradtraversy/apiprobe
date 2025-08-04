@@ -1,4 +1,5 @@
 import { type ApiRequest, type RequestHistory } from '@/types/api';
+import { type Environment } from '@/lib/variable-substitution';
 
 const STORAGE_KEYS = {
   SAVED_REQUESTS: 'apiprobe_saved_requests',
@@ -120,7 +121,7 @@ export function updateHistoryItem(updatedHistory: RequestHistory): void {
 }
 
 // Environment management functions
-export function saveEnvironments(environments: any[]): void {
+export function saveEnvironments(environments: Environment[]): void {
   try {
     localStorage.setItem(
       STORAGE_KEYS.ENVIRONMENTS,
@@ -131,7 +132,7 @@ export function saveEnvironments(environments: any[]): void {
   }
 }
 
-export function getEnvironments(): any[] {
+export function getEnvironments(): Environment[] {
   try {
     const saved = localStorage.getItem(STORAGE_KEYS.ENVIRONMENTS);
     if (!saved) {
