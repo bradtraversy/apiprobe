@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { isValidVariableName, isValidVariableValue } from '@/lib/validation';
 import {
   Settings,
   Plus,
@@ -331,25 +332,36 @@ const EnvironmentManager = ({
                       placeholder='Variable value'
                       className='flex-1'
                     />
-                    <Button
-                      variant='outline'
-                      size='sm'
-                      onClick={() => {
-                        if (newVarKey.trim() && newVarValue.trim()) {
-                          const newVariables = {
-                            ...editingEnvironment.variables,
-                            [newVarKey.trim()]: newVarValue.trim(),
-                          };
-                          setEditingEnvironment({
-                            ...editingEnvironment,
-                            variables: newVariables,
-                          });
-                          setNewVarKey('');
-                          setNewVarValue('');
-                        }
-                      }}
-                      disabled={!newVarKey.trim() || !newVarValue.trim()}
-                    >
+                                         <Button
+                       variant='outline'
+                       size='sm'
+                       onClick={() => {
+                         if (newVarKey.trim() && newVarValue.trim()) {
+                           // Validate variable name and value
+                           if (!isValidVariableName(newVarKey.trim())) {
+                             alert('Invalid variable name. Use only letters, numbers, underscores, and hyphens. Must start with a letter.');
+                             return;
+                           }
+                           
+                           if (!isValidVariableValue(newVarValue.trim())) {
+                             alert('Invalid variable value. Contains potentially dangerous content.');
+                             return;
+                           }
+                           
+                           const newVariables = {
+                             ...editingEnvironment.variables,
+                             [newVarKey.trim()]: newVarValue.trim(),
+                           };
+                           setEditingEnvironment({
+                             ...editingEnvironment,
+                             variables: newVariables,
+                           });
+                           setNewVarKey('');
+                           setNewVarValue('');
+                         }
+                       }}
+                       disabled={!newVarKey.trim() || !newVarValue.trim()}
+                     >
                       <Plus className='w-4 h-4' />
                     </Button>
                   </div>

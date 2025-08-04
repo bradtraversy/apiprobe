@@ -30,6 +30,8 @@ import RequestHistoryList from '@/components/ui/request-history';
 import RequestFormContainer from '@/components/ui/request-form-container';
 import ResponseViewerContainer from '@/components/ui/response-viewer-container';
 import EnvironmentManager from '@/components/ui/environment-manager';
+import SecurityWarning from '@/components/ui/security-warning';
+import SettingsPanel from '@/components/ui/settings-panel';
 
 export default function HomePage() {
   const [currentResponse, setCurrentResponse] = useState<ApiResponse | null>(
@@ -120,11 +122,22 @@ export default function HomePage() {
     saveCurrentEnvironment(environmentId);
   };
 
+  const handleDataCleared = () => {
+    // Reset all state when data is cleared
+    setSavedRequests([]);
+    setRequestHistory([]);
+    setEnvironments([]);
+    setCurrentEnvironment('');
+    setCurrentResponse(null);
+    setSelectedRequest(null);
+  };
+
   return (
     <div className='min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100'>
       <Header />
 
       <div className='container mx-auto px-6 py-8'>
+        <SecurityWarning className='mb-6' />
         <div className='grid grid-cols-1 lg:grid-cols-4 gap-6'>
           {/* Left Sidebar */}
           <div className='lg:col-span-1 space-y-6'>
@@ -144,6 +157,7 @@ export default function HomePage() {
               onLoadRequest={handleLoadRequest}
               onDeleteHistory={handleDeleteHistory}
             />
+            <SettingsPanel onDataCleared={handleDataCleared} />
           </div>
 
           {/* Main Content */}
