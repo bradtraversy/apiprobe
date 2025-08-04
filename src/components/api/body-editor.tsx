@@ -1,5 +1,6 @@
 import { Select } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import UrlEncodedEditor from './url-encoded-editor';
 
 interface BodyEditorProps {
   body: string;
@@ -50,18 +51,22 @@ const BodyEditor = ({
           </button>
         )}
       </div>
-      <Textarea
-        value={body}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={
-          contentType === 'application/json'
-            ? '{"key": "value"}'
-            : contentType === 'application/xml'
-            ? '<root><item>value</item></root>'
-            : 'Enter request body...'
-        }
-        className='min-h-[200px] font-mono text-sm'
-      />
+      {contentType === 'application/x-www-form-urlencoded' ? (
+        <UrlEncodedEditor body={body} onChange={onChange} />
+      ) : (
+        <Textarea
+          value={body}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={
+            contentType === 'application/json'
+              ? '{"key": "value"}'
+              : contentType === 'application/xml'
+              ? '<root><item>value</item></root>'
+              : 'Enter request body...'
+          }
+          className='min-h-[200px] font-mono text-sm'
+        />
+      )}
     </div>
   );
 };

@@ -14,12 +14,19 @@ const RequestHistoryList = ({
   onDeleteHistory,
 }: RequestHistoryProps) => {
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(date);
+    const now = new Date();
+    const diffInHours = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60 * 60)
+    );
+
+    if (diffInHours < 1) {
+      return 'now';
+    } else if (diffInHours < 24) {
+      return `${diffInHours}h ago`;
+    } else {
+      const diffInDays = Math.floor(diffInHours / 24);
+      return `${diffInDays}d ago`;
+    }
   };
 
   return (
@@ -44,7 +51,7 @@ const RequestHistoryList = ({
               key={history.id}
               className='group bg-white/50 hover:bg-white/80 rounded-xl p-3 border border-white/30 transition-all duration-200 hover:shadow-md'
             >
-              <div className='flex items-center justify-between'>
+              <div className='flex items-start justify-between gap-3'>
                 <div className='flex-1 min-w-0'>
                   <div className='text-sm font-medium text-slate-800 truncate'>
                     {history.request.name}
@@ -53,9 +60,8 @@ const RequestHistoryList = ({
                     {history.request.url}
                   </div>
                 </div>
-                <div className='flex items-center gap-2'>
-                  <div className='flex items-center gap-1 text-xs text-slate-500'>
-                    <Clock className='h-3 w-3' />
+                <div className='flex items-center gap-2 flex-shrink-0'>
+                  <div className='text-xs text-slate-500 bg-slate-100/50 px-2 py-1 rounded-md'>
                     {formatDate(history.timestamp)}
                   </div>
                   <div className='flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity'>

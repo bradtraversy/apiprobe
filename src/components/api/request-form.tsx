@@ -49,6 +49,14 @@ const RequestForm = ({
     }
   }, [initialRequest]);
 
+  // Clear body when switching to GET/HEAD methods
+  const handleMethodChange = (newMethod: HttpMethod) => {
+    setMethod(newMethod);
+    if (newMethod === 'GET' || newMethod === 'HEAD') {
+      setBody('');
+    }
+  };
+
   const handleSend = async () => {
     if (!url.trim()) return;
 
@@ -96,8 +104,15 @@ const RequestForm = ({
     onSave?.(request);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
   return (
-    <div className={className}>
+    <div className={className} onKeyDown={handleKeyDown}>
       <div className='space-y-6'>
         {/* Request Name */}
         <div>
@@ -118,7 +133,7 @@ const RequestForm = ({
           </label>
           <div className='flex items-start gap-4'>
             <div className='w-40 flex-shrink-0'>
-              <MethodSelector value={method} onChange={setMethod} />
+              <MethodSelector value={method} onChange={handleMethodChange} />
             </div>
             <div className='flex-1'>
               <UrlInput value={url} onChange={setUrl} />
