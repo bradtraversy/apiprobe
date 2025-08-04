@@ -14,6 +14,7 @@ import {
   getRequestHistory,
   deleteSavedRequest,
   deleteHistoryItem,
+  updateHistoryItem,
   saveEnvironments,
   getEnvironments,
   saveCurrentEnvironment,
@@ -78,14 +79,33 @@ export default function HomePage() {
     const response = await makeApiRequest(processedRequest);
     setCurrentResponse(response);
 
-    // Save to history
-    const history: RequestHistory = {
-      id: crypto.randomUUID(),
-      request: processedRequest,
-      response,
-      timestamp: new Date(),
-    };
-    saveToHistory(history);
+    // Check if this request already exists in history
+    const existingHistory = requestHistory.find(
+      (item) =>
+        item.request.method === processedRequest.method &&
+        item.request.url === processedRequest.url &&
+        item.request.name === processedRequest.name
+    );
+
+    if (existingHistory) {
+      // Update existing history item with new response and timestamp
+      const updatedHistory: RequestHistory = {
+        ...existingHistory,
+        response,
+        timestamp: new Date(),
+      };
+      updateHistoryItem(updatedHistory);
+    } else {
+      // Add new history item
+      const history: RequestHistory = {
+        id: crypto.randomUUID(),
+        request: processedRequest,
+        response,
+        timestamp: new Date(),
+      };
+      saveToHistory(history);
+    }
+    
     setRequestHistory(getRequestHistory());
   };
 
@@ -159,6 +179,9 @@ export default function HomePage() {
               requestHistory={requestHistory}
               onLoadRequest={handleLoadRequest}
               onDeleteHistory={handleDeleteHistory}
+              environmentVariables={
+                environments.find((env) => env.id === currentEnvironment)?.variables || {}
+              }
             />
             <SettingsPanel onDataCleared={handleDataCleared} />
           </div>

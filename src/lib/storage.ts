@@ -107,6 +107,21 @@ export function deleteHistoryItem(id: string): void {
   }
 }
 
+export function updateHistoryItem(updatedHistory: RequestHistory): void {
+  try {
+    const saved = getRequestHistory();
+    const updated = saved.map((item) =>
+      item.id === updatedHistory.id ? updatedHistory : item
+    );
+    localStorage.setItem(
+      STORAGE_KEYS.REQUEST_HISTORY,
+      JSON.stringify(updated)
+    );
+  } catch (error) {
+    console.error('Failed to update history item:', error);
+  }
+}
+
 // Environment management functions
 export function saveEnvironments(environments: any[]): void {
   try {

@@ -1,17 +1,20 @@
 import { History, Clock, Play, Trash2 } from 'lucide-react';
 import { type ApiRequest, type RequestHistory } from '@/types/api';
 import { Button } from './button';
+import { substituteVariables } from '@/lib/variable-substitution';
 
 type RequestHistoryProps = {
   requestHistory: RequestHistory[];
   onLoadRequest: (request: ApiRequest) => void;
   onDeleteHistory: (id: string) => void;
+  environmentVariables?: Record<string, string>;
 };
 
 const RequestHistoryList = ({
   requestHistory,
   onLoadRequest,
   onDeleteHistory,
+  environmentVariables = {},
 }: RequestHistoryProps) => {
   const formatDate = (date: Date) => {
     const now = new Date();
@@ -57,7 +60,7 @@ const RequestHistoryList = ({
                     {history.request.name}
                   </div>
                   <div className='text-xs text-slate-500 truncate mt-1'>
-                    {history.request.url}
+                    {substituteVariables(history.request.url, environmentVariables)}
                   </div>
                 </div>
                 <div className='flex items-center gap-2 flex-shrink-0'>
