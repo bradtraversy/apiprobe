@@ -90,7 +90,21 @@ export default function HomePage() {
   };
 
   const handleSaveRequest = (request: ApiRequest) => {
-    saveRequest(request);
+    // Get current environment variables
+    const currentEnv = environments.find(
+      (env) => env.id === currentEnvironment
+    );
+    const variables = currentEnv?.variables || {};
+
+    // Substitute variables in request before saving
+    const processedRequest: ApiRequest = {
+      ...request,
+      url: substituteVariables(request.url, variables),
+      headers: substituteVariablesInObject(request.headers, variables),
+      body: substituteVariables(request.body, variables),
+    };
+
+    saveRequest(processedRequest);
     setSavedRequests(getSavedRequests());
   };
 
