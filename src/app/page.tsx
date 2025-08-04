@@ -90,21 +90,7 @@ export default function HomePage() {
   };
 
   const handleSaveRequest = (request: ApiRequest) => {
-    // Get current environment variables
-    const currentEnv = environments.find(
-      (env) => env.id === currentEnvironment
-    );
-    const variables = currentEnv?.variables || {};
-
-    // Substitute variables in request before saving
-    const processedRequest: ApiRequest = {
-      ...request,
-      url: substituteVariables(request.url, variables),
-      headers: substituteVariablesInObject(request.headers, variables),
-      body: substituteVariables(request.body, variables),
-    };
-
-    saveRequest(processedRequest);
+    saveRequest(request);
     setSavedRequests(getSavedRequests());
   };
 
@@ -165,6 +151,9 @@ export default function HomePage() {
               savedRequests={savedRequests}
               onLoadRequest={handleLoadRequest}
               onDeleteRequest={handleDeleteRequest}
+              environmentVariables={
+                environments.find((env) => env.id === currentEnvironment)?.variables || {}
+              }
             />
             <RequestHistoryList
               requestHistory={requestHistory}

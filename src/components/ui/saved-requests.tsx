@@ -1,17 +1,20 @@
 import { Bookmark, Play, Trash2 } from 'lucide-react';
 import { type ApiRequest } from '@/types/api';
 import { Button } from './button';
+import { substituteVariables } from '@/lib/variable-substitution';
 
 type SavedRequestsProps = {
   savedRequests: ApiRequest[];
   onLoadRequest: (request: ApiRequest) => void;
   onDeleteRequest: (id: string) => void;
+  environmentVariables?: Record<string, string>;
 };
 
 const SavedRequests = ({
   savedRequests,
   onLoadRequest,
   onDeleteRequest,
+  environmentVariables = {},
 }: SavedRequestsProps) => {
   return (
     <div className='bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6'>
@@ -40,7 +43,7 @@ const SavedRequests = ({
                     {request.name}
                   </div>
                   <div className='text-xs text-slate-500 truncate mt-1'>
-                    {request.url}
+                    {substituteVariables(request.url, environmentVariables)}
                   </div>
                 </div>
                 <div className='flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity'>
