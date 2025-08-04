@@ -1,4 +1,5 @@
 import { type ApiRequest, type ApiResponse } from '@/types/api';
+import { sanitizeUrl, sanitizeHeaders } from '@/lib/validation';
 
 export async function makeApiRequest(
   request: ApiRequest
@@ -6,9 +7,10 @@ export async function makeApiRequest(
   const startTime = Date.now();
 
   try {
-    // Prepare headers
+    // Prepare and sanitize headers
+    const sanitizedHeaders = sanitizeHeaders(request.headers);
     const headers: Record<string, string> = {};
-    Object.entries(request.headers).forEach(([key, value]) => {
+    Object.entries(sanitizedHeaders).forEach(([key, value]) => {
       if (key.toLowerCase() !== 'content-type' || request.method !== 'GET') {
         headers[key] = value;
       }
@@ -73,10 +75,9 @@ export function validateRequest(request: ApiRequest): string | null {
   // Skip URL validation if it contains environment variables
   // (they will be validated after substitution)
   if (!request.url.includes('{{')) {
-    try {
-      new URL(request.url);
-    } catch {
-      return 'Invalid URL format';
+    const sanitizedUrl = sanitizeUrl(request.url);
+    if (!sanitizedUrl) {
+      return 'Invalid URL format or protocol not allowed';
     }
   }
 
