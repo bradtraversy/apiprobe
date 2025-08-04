@@ -31,6 +31,7 @@ import RequestFormContainer from '@/components/ui/request-form-container';
 import ResponseViewerContainer from '@/components/ui/response-viewer-container';
 import EnvironmentManager from '@/components/ui/environment-manager';
 import SecurityWarning from '@/components/ui/security-warning';
+import SettingsPanel from '@/components/ui/settings-panel';
 
 export default function HomePage() {
   const [currentResponse, setCurrentResponse] = useState<ApiResponse | null>(
@@ -121,6 +122,16 @@ export default function HomePage() {
     saveCurrentEnvironment(environmentId);
   };
 
+  const handleDataCleared = () => {
+    // Reset all state when data is cleared
+    setSavedRequests([]);
+    setRequestHistory([]);
+    setEnvironments([]);
+    setCurrentEnvironment('');
+    setCurrentResponse(null);
+    setSelectedRequest(null);
+  };
+
   return (
     <div className='min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100'>
       <Header />
@@ -146,6 +157,7 @@ export default function HomePage() {
               onLoadRequest={handleLoadRequest}
               onDeleteHistory={handleDeleteHistory}
             />
+            <SettingsPanel onDataCleared={handleDataCleared} />
           </div>
 
           {/* Main Content */}
