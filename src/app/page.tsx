@@ -105,7 +105,7 @@ export default function HomePage() {
       };
       saveToHistory(history);
     }
-    
+
     setRequestHistory(getRequestHistory());
   };
 
@@ -172,7 +172,8 @@ export default function HomePage() {
               onLoadRequest={handleLoadRequest}
               onDeleteRequest={handleDeleteRequest}
               environmentVariables={
-                environments.find((env) => env.id === currentEnvironment)?.variables || {}
+                environments.find((env) => env.id === currentEnvironment)
+                  ?.variables || {}
               }
             />
             <RequestHistoryList
@@ -180,7 +181,8 @@ export default function HomePage() {
               onLoadRequest={handleLoadRequest}
               onDeleteHistory={handleDeleteHistory}
               environmentVariables={
-                environments.find((env) => env.id === currentEnvironment)?.variables || {}
+                environments.find((env) => env.id === currentEnvironment)
+                  ?.variables || {}
               }
             />
             <SettingsPanel onDataCleared={handleDataCleared} />

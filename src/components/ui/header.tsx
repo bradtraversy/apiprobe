@@ -1,4 +1,5 @@
 import { Zap } from 'lucide-react';
+import GitHubLink from './github-link';
 
 const Header = () => {
   return (
@@ -18,11 +19,7 @@ const Header = () => {
               </p>
             </div>
           </div>
-          <div className='flex items-center gap-2'>
-            <div className='px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium'>
-              Ready
-            </div>
-          </div>
+          <GitHubLink />
         </div>
       </div>
     </div>
