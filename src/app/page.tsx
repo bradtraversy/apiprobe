@@ -1,103 +1,254 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { useState, useEffect } from 'react';
+import {
+  type ApiRequest,
+  type ApiResponse,
+  type RequestHistory,
+} from '@/types/api';
+import { makeApiRequest, validateRequest } from '@/lib/api-service';
+import {
+  saveRequest,
+  saveToHistory,
+  getSavedRequests,
+  getRequestHistory,
+  deleteSavedRequest,
+} from '@/lib/storage';
+import RequestForm from '@/components/api/request-form';
+import ResponseViewer from '@/components/api/response-viewer';
+import { Button } from '@/components/ui/button';
+import { Clock, Trash2, Play, Zap, History, Bookmark } from 'lucide-react';
+
+export default function HomePage() {
+  const [currentResponse, setCurrentResponse] = useState<ApiResponse | null>(
+    null
+  );
+  const [savedRequests, setSavedRequests] = useState<ApiRequest[]>([]);
+  const [requestHistory, setRequestHistory] = useState<RequestHistory[]>([]);
+  const [selectedRequest, setSelectedRequest] = useState<ApiRequest | null>(
+    null
+  );
+
+  useEffect(() => {
+    // Load saved data on mount
+    setSavedRequests(getSavedRequests());
+    setRequestHistory(getRequestHistory());
+  }, []);
+
+  const handleSendRequest = async (request: ApiRequest) => {
+    const validationError = validateRequest(request);
+    if (validationError) {
+      alert(validationError);
+      return;
+    }
+
+    const response = await makeApiRequest(request);
+    setCurrentResponse(response);
+
+    // Save to history
+    const history: RequestHistory = {
+      id: crypto.randomUUID(),
+      request,
+      response,
+      timestamp: new Date(),
+    };
+    saveToHistory(history);
+    setRequestHistory(getRequestHistory());
+  };
+
+  const handleSaveRequest = (request: ApiRequest) => {
+    saveRequest(request);
+    setSavedRequests(getSavedRequests());
+  };
+
+  const handleLoadRequest = (request: ApiRequest) => {
+    setSelectedRequest(request);
+  };
+
+  const handleDeleteRequest = (id: string) => {
+    if (confirm('Are you sure you want to delete this request?')) {
+      deleteSavedRequest(id);
+      setSavedRequests(getSavedRequests());
+    }
+  };
+
+  const formatDate = (date: Date) => {
+    return new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(date);
+  };
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className='min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100'>
+      {/* Header */}
+      <div className='bg-white/80 backdrop-blur-sm border-b border-slate-200/50 sticky top-0 z-10'>
+        <div className='container mx-auto px-6 py-4'>
+          <div className='flex items-center justify-between'>
+            <div className='flex items-center gap-3'>
+              <div className='w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg'>
+                <Zap className='w-6 h-6 text-white' />
+              </div>
+              <div>
+                <h1 className='text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent'>
+                  API Probe
+                </h1>
+                <p className='text-sm text-slate-600'>
+                  Simple & Powerful API Testing
+                </p>
+              </div>
+            </div>
+            <div className='flex items-center gap-2'>
+              <div className='px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium'>
+                Ready
+              </div>
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+
+      <div className='container mx-auto px-6 py-8'>
+        <div className='grid grid-cols-1 lg:grid-cols-4 gap-6'>
+          {/* Left Sidebar */}
+          <div className='lg:col-span-1 space-y-6'>
+            {/* Saved Requests */}
+            <div className='bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6'>
+              <div className='flex items-center gap-2 mb-4'>
+                <Bookmark className='w-5 h-5 text-blue-600' />
+                <h2 className='text-lg font-semibold text-slate-800'>
+                  Saved Requests
+                </h2>
+              </div>
+              {savedRequests.length === 0 ? (
+                <div className='text-center py-8'>
+                  <div className='w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3'>
+                    <Bookmark className='w-6 h-6 text-blue-600' />
+                  </div>
+                  <p className='text-slate-500 text-sm'>
+                    No saved requests yet
+                  </p>
+                </div>
+              ) : (
+                <div className='space-y-3'>
+                  {savedRequests.map((request) => (
+                    <div
+                      key={request.id}
+                      className='group bg-white/50 hover:bg-white/80 rounded-xl p-3 border border-white/30 transition-all duration-200 hover:shadow-md'
+                    >
+                      <div className='flex items-center justify-between'>
+                        <div className='flex-1 min-w-0'>
+                          <div className='text-sm font-medium text-slate-800 truncate'>
+                            {request.name}
+                          </div>
+                          <div className='text-xs text-slate-500 truncate mt-1'>
+                            {request.url}
+                          </div>
+                        </div>
+                        <div className='flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity'>
+                          <Button
+                            variant='ghost'
+                            size='sm'
+                            onClick={() => handleLoadRequest(request)}
+                            className='p-1 h-8 w-8 text-blue-600 hover:bg-blue-100'
+                          >
+                            <Play className='h-3 w-3' />
+                          </Button>
+                          <Button
+                            variant='ghost'
+                            size='sm'
+                            onClick={() => handleDeleteRequest(request.id)}
+                            className='p-1 h-8 w-8 text-red-600 hover:bg-red-100'
+                          >
+                            <Trash2 className='h-3 w-3' />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Request History */}
+            <div className='bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6'>
+              <div className='flex items-center gap-2 mb-4'>
+                <History className='w-5 h-5 text-indigo-600' />
+                <h2 className='text-lg font-semibold text-slate-800'>
+                  Recent Requests
+                </h2>
+              </div>
+              {requestHistory.length === 0 ? (
+                <div className='text-center py-8'>
+                  <div className='w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-3'>
+                    <History className='w-6 h-6 text-indigo-600' />
+                  </div>
+                  <p className='text-slate-500 text-sm'>No recent requests</p>
+                </div>
+              ) : (
+                <div className='space-y-3'>
+                  {requestHistory.slice(0, 5).map((history) => (
+                    <div
+                      key={history.id}
+                      className='group bg-white/50 hover:bg-white/80 rounded-xl p-3 border border-white/30 transition-all duration-200 hover:shadow-md cursor-pointer'
+                      onClick={() => handleLoadRequest(history.request)}
+                    >
+                      <div className='flex items-center justify-between'>
+                        <div className='flex-1 min-w-0'>
+                          <div className='text-sm font-medium text-slate-800 truncate'>
+                            {history.request.name}
+                          </div>
+                          <div className='text-xs text-slate-500 truncate mt-1'>
+                            {history.request.url}
+                          </div>
+                        </div>
+                        <div className='flex items-center gap-1 text-xs text-slate-500'>
+                          <Clock className='h-3 w-3' />
+                          {formatDate(history.timestamp)}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className='lg:col-span-3 space-y-6'>
+            {/* Request Form */}
+            <div className='bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8'>
+              <div className='flex items-center gap-3 mb-6'>
+                <div className='w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center'>
+                  <Zap className='w-4 h-4 text-white' />
+                </div>
+                <h2 className='text-xl font-semibold text-slate-800'>
+                  New Request
+                </h2>
+              </div>
+              <RequestForm
+                onSend={handleSendRequest}
+                onSave={handleSaveRequest}
+                initialRequest={selectedRequest || undefined}
+              />
+            </div>
+
+            {/* Response Viewer */}
+            <div className='bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8'>
+              <div className='flex items-center gap-3 mb-6'>
+                <div className='w-8 h-8 bg-gradient-to-br from-green-600 to-emerald-600 rounded-lg flex items-center justify-center'>
+                  <div className='w-2 h-2 bg-white rounded-full'></div>
+                </div>
+                <h2 className='text-xl font-semibold text-slate-800'>
+                  Response
+                </h2>
+              </div>
+              <ResponseViewer response={currentResponse} />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
