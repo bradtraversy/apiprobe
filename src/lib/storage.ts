@@ -113,10 +113,7 @@ export function updateHistoryItem(updatedHistory: RequestHistory): void {
     const updated = saved.map((item) =>
       item.id === updatedHistory.id ? updatedHistory : item
     );
-    localStorage.setItem(
-      STORAGE_KEYS.REQUEST_HISTORY,
-      JSON.stringify(updated)
-    );
+    localStorage.setItem(STORAGE_KEYS.REQUEST_HISTORY, JSON.stringify(updated));
   } catch (error) {
     console.error('Failed to update history item:', error);
   }
@@ -182,7 +179,7 @@ export function getCurrentEnvironment(): string {
 export function clearAllData(): void {
   try {
     // Clear all application data
-    Object.values(STORAGE_KEYS).forEach(key => {
+    Object.values(STORAGE_KEYS).forEach((key) => {
       localStorage.removeItem(key);
     });
     console.log('All application data cleared successfully');
