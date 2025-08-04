@@ -110,7 +110,10 @@ export function deleteHistoryItem(id: string): void {
 // Environment management functions
 export function saveEnvironments(environments: any[]): void {
   try {
-    localStorage.setItem(STORAGE_KEYS.ENVIRONMENTS, JSON.stringify(environments));
+    localStorage.setItem(
+      STORAGE_KEYS.ENVIRONMENTS,
+      JSON.stringify(environments)
+    );
   } catch (error) {
     console.error('Failed to save environments:', error);
   }

@@ -8,8 +8,18 @@ interface UrlInputProps {
   className?: string;
 }
 
-const UrlInput = ({ value, onChange, placeholder = 'Enter URL...', className }: UrlInputProps) => {
+const UrlInput = ({
+  value,
+  onChange,
+  placeholder = 'Enter URL...',
+  className,
+}: UrlInputProps) => {
   const isValidUrl = (url: string) => {
+    // Skip validation if URL contains environment variables
+    if (url.includes('{{')) {
+      return true;
+    }
+
     try {
       new URL(url);
       return true;
@@ -19,24 +29,32 @@ const UrlInput = ({ value, onChange, placeholder = 'Enter URL...', className }: 
   };
 
   return (
-    <div className="relative">
+    <div className='relative'>
       <Input
-        type="url"
+        type='url'
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className={cn(
           'pr-10',
-          value && !isValidUrl(value) && 'border-red-500 focus-visible:ring-red-500',
-          className,
+          value &&
+            !isValidUrl(value) &&
+            'border-red-500 focus-visible:ring-red-500',
+          className
         )}
       />
       {value && (
-        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+        <div className='absolute right-3 top-1/2 -translate-y-1/2'>
           {isValidUrl(value) ? (
-            <div className="w-4 h-4 bg-green-500 rounded-full" title="Valid URL" />
+            <div
+              className='w-4 h-4 bg-green-500 rounded-full'
+              title='Valid URL'
+            />
           ) : (
-            <div className="w-4 h-4 bg-red-500 rounded-full" title="Invalid URL" />
+            <div
+              className='w-4 h-4 bg-red-500 rounded-full'
+              title='Invalid URL'
+            />
           )}
         </div>
       )}
@@ -44,4 +62,4 @@ const UrlInput = ({ value, onChange, placeholder = 'Enter URL...', className }: 
   );
 };
 
-export default UrlInput; 
+export default UrlInput;

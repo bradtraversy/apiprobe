@@ -52,14 +52,10 @@ export default function HomePage() {
   }, []);
 
   const handleSendRequest = async (request: ApiRequest) => {
-    const validationError = validateRequest(request);
-    if (validationError) {
-      alert(validationError);
-      return;
-    }
-
     // Get current environment variables
-    const currentEnv = environments.find(env => env.id === currentEnvironment);
+    const currentEnv = environments.find(
+      (env) => env.id === currentEnvironment
+    );
     const variables = currentEnv?.variables || {};
 
     // Substitute variables in request
@@ -69,6 +65,13 @@ export default function HomePage() {
       headers: substituteVariablesInObject(request.headers, variables),
       body: substituteVariables(request.body, variables),
     };
+
+    // Validate the processed request (after variable substitution)
+    const validationError = validateRequest(processedRequest);
+    if (validationError) {
+      alert(validationError);
+      return;
+    }
 
     const response = await makeApiRequest(processedRequest);
     setCurrentResponse(response);

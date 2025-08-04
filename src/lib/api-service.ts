@@ -70,10 +70,14 @@ export function validateRequest(request: ApiRequest): string | null {
     return 'URL is required';
   }
 
-  try {
-    new URL(request.url);
-  } catch {
-    return 'Invalid URL format';
+  // Skip URL validation if it contains environment variables
+  // (they will be validated after substitution)
+  if (!request.url.includes('{{')) {
+    try {
+      new URL(request.url);
+    } catch {
+      return 'Invalid URL format';
+    }
   }
 
   if (request.method === 'GET' && request.body) {

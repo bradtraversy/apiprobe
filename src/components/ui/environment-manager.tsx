@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { 
-  Settings, 
-  Plus, 
-  Trash2, 
-  Save, 
+import {
+  Settings,
+  Plus,
+  Trash2,
+  Save,
   X,
   Globe,
-  ChevronDown
+  ChevronDown,
 } from 'lucide-react';
 
 interface Environment {
@@ -33,12 +33,13 @@ const EnvironmentManager = ({
   className,
 }: EnvironmentManagerProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [editingEnvironment, setEditingEnvironment] = useState<Environment | null>(null);
+  const [editingEnvironment, setEditingEnvironment] =
+    useState<Environment | null>(null);
   const [newEnvName, setNewEnvName] = useState('');
   const [newVarKey, setNewVarKey] = useState('');
   const [newVarValue, setNewVarValue] = useState('');
 
-  const currentEnv = environments.find(env => env.id === currentEnvironment);
+  const currentEnv = environments.find((env) => env.id === currentEnvironment);
 
   const addEnvironment = () => {
     if (newEnvName.trim()) {
@@ -54,9 +55,9 @@ const EnvironmentManager = ({
   };
 
   const deleteEnvironment = (id: string) => {
-    const newEnvironments = environments.filter(env => env.id !== id);
+    const newEnvironments = environments.filter((env) => env.id !== id);
     onEnvironmentsChange(newEnvironments);
-    
+
     // Switch to first available environment or create default
     if (newEnvironments.length > 0) {
       onCurrentEnvironmentChange(newEnvironments[0].id);
@@ -72,7 +73,7 @@ const EnvironmentManager = ({
   };
 
   const updateEnvironment = (updatedEnv: Environment) => {
-    const newEnvironments = environments.map(env => 
+    const newEnvironments = environments.map((env) =>
       env.id === updatedEnv.id ? updatedEnv : env
     );
     onEnvironmentsChange(newEnvironments);
@@ -80,7 +81,7 @@ const EnvironmentManager = ({
 
   const addVariable = (envId: string) => {
     if (newVarKey.trim() && newVarValue.trim()) {
-      const env = environments.find(e => e.id === envId);
+      const env = environments.find((e) => e.id === envId);
       if (env) {
         const updatedEnv = {
           ...env,
@@ -97,7 +98,7 @@ const EnvironmentManager = ({
   };
 
   const removeVariable = (envId: string, key: string) => {
-    const env = environments.find(e => e.id === envId);
+    const env = environments.find((e) => e.id === envId);
     if (env) {
       const newVariables = { ...env.variables };
       delete newVariables[key];
@@ -110,7 +111,7 @@ const EnvironmentManager = ({
   };
 
   const updateVariable = (envId: string, key: string, value: string) => {
-    const env = environments.find(e => e.id === envId);
+    const env = environments.find((e) => e.id === envId);
     if (env) {
       const newVariables = { ...env.variables };
       newVariables[key] = value;
@@ -126,7 +127,9 @@ const EnvironmentManager = ({
     <div className={className}>
       <div className='flex items-center gap-2 mb-3'>
         <Globe className='w-4 h-4 text-slate-600' />
-        <label className='text-sm font-medium text-slate-700'>Environment</label>
+        <label className='text-sm font-medium text-slate-700'>
+          Environment
+        </label>
       </div>
 
       {/* Environment Selector */}
@@ -140,7 +143,11 @@ const EnvironmentManager = ({
             <Globe className='w-4 h-4' />
             {currentEnv?.name || 'No Environment'}
           </span>
-          <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+          <ChevronDown
+            className={`w-4 h-4 transition-transform ${
+              isOpen ? 'rotate-180' : ''
+            }`}
+          />
         </Button>
 
         {isOpen && (
@@ -201,7 +208,7 @@ const EnvironmentManager = ({
             {Object.entries(currentEnv.variables).map(([key, value]) => (
               <div key={key} className='flex items-center gap-2 text-sm'>
                 <span className='font-mono bg-slate-100 px-2 py-1 rounded'>
-                  {key}
+                  {`{{${key}}}`}
                 </span>
                 <span className='text-slate-500'>→</span>
                 <span className='font-mono bg-slate-100 px-2 py-1 rounded'>
@@ -210,7 +217,9 @@ const EnvironmentManager = ({
               </div>
             ))}
             {Object.keys(currentEnv.variables).length === 0 && (
-              <p className='text-xs text-slate-500 italic'>No variables defined</p>
+              <p className='text-xs text-slate-500 italic'>
+                No variables defined
+              </p>
             )}
           </div>
         </div>
@@ -234,52 +243,80 @@ const EnvironmentManager = ({
             <div className='space-y-4'>
               {/* Environment Name */}
               <div>
-                <label className='block text-sm font-medium mb-2'>Environment Name</label>
+                <label className='block text-sm font-medium mb-2'>
+                  Environment Name
+                </label>
                 <Input
                   value={editingEnvironment.name}
-                  onChange={(e) => setEditingEnvironment({
-                    ...editingEnvironment,
-                    name: e.target.value,
-                  })}
+                  onChange={(e) =>
+                    setEditingEnvironment({
+                      ...editingEnvironment,
+                      name: e.target.value,
+                    })
+                  }
                 />
               </div>
 
               {/* Variables */}
               <div>
-                <label className='block text-sm font-medium mb-2'>Variables</label>
+                <label className='block text-sm font-medium mb-2'>
+                  Variables
+                </label>
                 <div className='space-y-2'>
-                  {Object.entries(editingEnvironment.variables).map(([key, value]) => (
-                    <div key={key} className='flex gap-2'>
-                      <Input
-                        value={key}
-                        onChange={(e) => {
-                          const newVariables = { ...editingEnvironment.variables };
-                          delete newVariables[key];
-                          newVariables[e.target.value] = value;
-                          setEditingEnvironment({
-                            ...editingEnvironment,
-                            variables: newVariables,
-                          });
-                        }}
-                        placeholder='Variable name'
-                        className='flex-1'
-                      />
-                      <Input
-                        value={value}
-                        onChange={(e) => updateVariable(editingEnvironment.id, key, e.target.value)}
-                        placeholder='Variable value'
-                        className='flex-1'
-                      />
-                      <Button
-                        variant='ghost'
-                        size='sm'
-                        onClick={() => removeVariable(editingEnvironment.id, key)}
-                      >
-                        <Trash2 className='w-4 h-4' />
-                      </Button>
-                    </div>
-                  ))}
-                  
+                  {Object.entries(editingEnvironment.variables).map(
+                    ([key, value]) => (
+                      <div key={key} className='flex gap-2'>
+                        <Input
+                          value={key}
+                          onChange={(e) => {
+                            const newVariables = {
+                              ...editingEnvironment.variables,
+                            };
+                            delete newVariables[key];
+                            newVariables[e.target.value] = value;
+                            setEditingEnvironment({
+                              ...editingEnvironment,
+                              variables: newVariables,
+                            });
+                          }}
+                          placeholder='Variable name'
+                          className='flex-1'
+                        />
+                        <Input
+                          value={value}
+                          onChange={(e) => {
+                            const newVariables = {
+                              ...editingEnvironment.variables,
+                            };
+                            newVariables[key] = e.target.value;
+                            setEditingEnvironment({
+                              ...editingEnvironment,
+                              variables: newVariables,
+                            });
+                          }}
+                          placeholder='Variable value'
+                          className='flex-1'
+                        />
+                        <Button
+                          variant='ghost'
+                          size='sm'
+                          onClick={() => {
+                            const newVariables = {
+                              ...editingEnvironment.variables,
+                            };
+                            delete newVariables[key];
+                            setEditingEnvironment({
+                              ...editingEnvironment,
+                              variables: newVariables,
+                            });
+                          }}
+                        >
+                          <Trash2 className='w-4 h-4' />
+                        </Button>
+                      </div>
+                    )
+                  )}
+
                   {/* Add New Variable */}
                   <div className='flex gap-2'>
                     <Input
@@ -297,7 +334,20 @@ const EnvironmentManager = ({
                     <Button
                       variant='outline'
                       size='sm'
-                      onClick={() => addVariable(editingEnvironment.id)}
+                      onClick={() => {
+                        if (newVarKey.trim() && newVarValue.trim()) {
+                          const newVariables = {
+                            ...editingEnvironment.variables,
+                            [newVarKey.trim()]: newVarValue.trim(),
+                          };
+                          setEditingEnvironment({
+                            ...editingEnvironment,
+                            variables: newVariables,
+                          });
+                          setNewVarKey('');
+                          setNewVarValue('');
+                        }
+                      }}
                       disabled={!newVarKey.trim() || !newVarValue.trim()}
                     >
                       <Plus className='w-4 h-4' />
@@ -335,4 +385,4 @@ const EnvironmentManager = ({
   );
 };
 
-export default EnvironmentManager; 
+export default EnvironmentManager;
