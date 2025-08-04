@@ -6,6 +6,7 @@ const STORAGE_KEYS = {
   REQUEST_HISTORY: 'apiprobe_request_history',
   ENVIRONMENTS: 'apiprobe_environments',
   CURRENT_ENVIRONMENT: 'apiprobe_current_environment',
+  SECURITY_WARNING_DISMISSED: 'apiprobe_security_warning_dismissed',
 } as const;
 
 export function saveRequest(request: ApiRequest): void {
@@ -186,5 +187,26 @@ export function clearAllData(): void {
     console.log('All application data cleared successfully');
   } catch (error) {
     console.error('Failed to clear application data:', error);
+  }
+}
+
+// Security warning functions
+export function setSecurityWarningDismissed(): void {
+  try {
+    localStorage.setItem(STORAGE_KEYS.SECURITY_WARNING_DISMISSED, 'true');
+  } catch (error) {
+    console.error('Failed to save security warning dismissal:', error);
+  }
+}
+
+export function isSecurityWarningDismissed(): boolean {
+  try {
+    const dismissed = localStorage.getItem(
+      STORAGE_KEYS.SECURITY_WARNING_DISMISSED
+    );
+    return dismissed === 'true';
+  } catch (error) {
+    console.error('Failed to check security warning dismissal:', error);
+    return false;
   }
 }
