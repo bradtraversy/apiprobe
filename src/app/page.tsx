@@ -30,6 +30,7 @@ import RequestHistoryList from '@/components/ui/request-history';
 import RequestFormContainer from '@/components/ui/request-form-container';
 import ResponseViewerContainer from '@/components/ui/response-viewer-container';
 import EnvironmentManager from '@/components/ui/environment-manager';
+import SecurityWarning from '@/components/ui/security-warning';
 
 export default function HomePage() {
   const [currentResponse, setCurrentResponse] = useState<ApiResponse | null>(
@@ -125,6 +126,7 @@ export default function HomePage() {
       <Header />
 
       <div className='container mx-auto px-6 py-8'>
+        <SecurityWarning className='mb-6' />
         <div className='grid grid-cols-1 lg:grid-cols-4 gap-6'>
           {/* Left Sidebar */}
           <div className='lg:col-span-1 space-y-6'>
