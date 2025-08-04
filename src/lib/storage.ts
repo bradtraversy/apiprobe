@@ -91,3 +91,16 @@ export function clearHistory(): void {
     console.error('Failed to clear history:', error);
   }
 }
+
+export function deleteHistoryItem(id: string): void {
+  try {
+    const saved = getRequestHistory();
+    const filtered = saved.filter((item) => item.id !== id);
+    localStorage.setItem(
+      STORAGE_KEYS.REQUEST_HISTORY,
+      JSON.stringify(filtered)
+    );
+  } catch (error) {
+    console.error('Failed to delete history item:', error);
+  }
+}

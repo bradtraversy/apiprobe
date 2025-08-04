@@ -13,6 +13,7 @@ import {
   getSavedRequests,
   getRequestHistory,
   deleteSavedRequest,
+  deleteHistoryItem,
 } from '@/lib/storage';
 import Header from '@/components/ui/header';
 import SavedRequests from '@/components/ui/saved-requests';
@@ -73,6 +74,13 @@ export default function HomePage() {
     }
   };
 
+  const handleDeleteHistory = (id: string) => {
+    if (confirm('Are you sure you want to delete this history item?')) {
+      deleteHistoryItem(id);
+      setRequestHistory(getRequestHistory());
+    }
+  };
+
   return (
     <div className='min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100'>
       <Header />
@@ -89,6 +97,7 @@ export default function HomePage() {
             <RequestHistoryList
               requestHistory={requestHistory}
               onLoadRequest={handleLoadRequest}
+              onDeleteHistory={handleDeleteHistory}
             />
           </div>
 

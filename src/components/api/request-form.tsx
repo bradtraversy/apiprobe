@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Send, Save } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { type ApiRequest, type HttpMethod } from '@/types/api';
 import MethodSelector from './method-selector';
 import UrlInput from './url-input';
@@ -32,6 +32,22 @@ const RequestForm = ({
   );
   const [body, setBody] = useState(initialRequest?.body || '');
   const [contentType, setContentType] = useState('application/json');
+
+  // Update form when initialRequest changes
+  useEffect(() => {
+    if (initialRequest) {
+      setName(initialRequest.name || '');
+      setMethod(initialRequest.method || 'GET');
+      setUrl(initialRequest.url || '');
+      setHeaders(
+        initialRequest.headers || { 'Content-Type': 'application/json' }
+      );
+      setBody(initialRequest.body || '');
+      setContentType(
+        initialRequest.headers?.['Content-Type'] || 'application/json'
+      );
+    }
+  }, [initialRequest]);
 
   const handleSend = async () => {
     if (!url.trim()) return;

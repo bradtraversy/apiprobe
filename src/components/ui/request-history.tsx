@@ -1,14 +1,17 @@
-import { History, Clock } from 'lucide-react';
+import { History, Clock, Play, Trash2 } from 'lucide-react';
 import { type ApiRequest, type RequestHistory } from '@/types/api';
+import { Button } from './button';
 
 type RequestHistoryProps = {
   requestHistory: RequestHistory[];
   onLoadRequest: (request: ApiRequest) => void;
+  onDeleteHistory: (id: string) => void;
 };
 
 const RequestHistoryList = ({
   requestHistory,
   onLoadRequest,
+  onDeleteHistory,
 }: RequestHistoryProps) => {
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('en-US', {
@@ -39,8 +42,7 @@ const RequestHistoryList = ({
           {requestHistory.slice(0, 5).map((history) => (
             <div
               key={history.id}
-              className='group bg-white/50 hover:bg-white/80 rounded-xl p-3 border border-white/30 transition-all duration-200 hover:shadow-md cursor-pointer'
-              onClick={() => onLoadRequest(history.request)}
+              className='group bg-white/50 hover:bg-white/80 rounded-xl p-3 border border-white/30 transition-all duration-200 hover:shadow-md'
             >
               <div className='flex items-center justify-between'>
                 <div className='flex-1 min-w-0'>
@@ -51,9 +53,29 @@ const RequestHistoryList = ({
                     {history.request.url}
                   </div>
                 </div>
-                <div className='flex items-center gap-1 text-xs text-slate-500'>
-                  <Clock className='h-3 w-3' />
-                  {formatDate(history.timestamp)}
+                <div className='flex items-center gap-2'>
+                  <div className='flex items-center gap-1 text-xs text-slate-500'>
+                    <Clock className='h-3 w-3' />
+                    {formatDate(history.timestamp)}
+                  </div>
+                  <div className='flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity'>
+                    <Button
+                      variant='ghost'
+                      size='sm'
+                      onClick={() => onLoadRequest(history.request)}
+                      className='p-1 h-8 w-8 text-indigo-600 hover:bg-indigo-100'
+                    >
+                      <Play className='h-3 w-3' />
+                    </Button>
+                    <Button
+                      variant='ghost'
+                      size='sm'
+                      onClick={() => onDeleteHistory(history.id)}
+                      className='p-1 h-8 w-8 text-red-600 hover:bg-red-100'
+                    >
+                      <Trash2 className='h-3 w-3' />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>

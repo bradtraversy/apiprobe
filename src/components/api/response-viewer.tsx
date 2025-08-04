@@ -116,7 +116,7 @@ const ResponseViewer = ({ response, className }: ResponseViewerProps) => {
           <div className='w-2 h-2 bg-green-500 rounded-full'></div>
           Response Body
         </h3>
-        <pre className='bg-slate-50/50 rounded-lg p-4 max-h-96 overflow-y-auto text-sm font-mono whitespace-pre-wrap border border-slate-200/50'>
+        <pre className='bg-slate-50/50 rounded-lg p-4 max-h-[800px] overflow-y-auto text-sm font-mono whitespace-pre-wrap border border-slate-200/50'>
           {formatBody(response.body, contentType)}
         </pre>
       </div>
