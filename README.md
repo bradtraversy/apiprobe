@@ -2,7 +2,7 @@
 
 A modern, feature-rich API testing tool built with Next.js, TypeScript, and Tailwind CSS. Test your APIs with ease using a beautiful, intuitive interface that rivals Postman.
 
-**🌐 [Live Demo](https://apiprobe.dev)**
+**🌐 [Live Demo](https://www.apiprobe.dev)**
 
 ![API Probe Screenshot](public/screen.webp)
 
