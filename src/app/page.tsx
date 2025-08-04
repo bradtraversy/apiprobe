@@ -14,12 +14,22 @@ import {
   getRequestHistory,
   deleteSavedRequest,
   deleteHistoryItem,
+  saveEnvironments,
+  getEnvironments,
+  saveCurrentEnvironment,
+  getCurrentEnvironment,
 } from '@/lib/storage';
+import {
+  substituteVariables,
+  substituteVariablesInObject,
+  type Environment,
+} from '@/lib/variable-substitution';
 import Header from '@/components/ui/header';
 import SavedRequests from '@/components/ui/saved-requests';
 import RequestHistoryList from '@/components/ui/request-history';
 import RequestFormContainer from '@/components/ui/request-form-container';
 import ResponseViewerContainer from '@/components/ui/response-viewer-container';
+import EnvironmentManager from '@/components/ui/environment-manager';
 
 export default function HomePage() {
   const [currentResponse, setCurrentResponse] = useState<ApiResponse | null>(
@@ -30,11 +40,15 @@ export default function HomePage() {
   const [selectedRequest, setSelectedRequest] = useState<ApiRequest | null>(
     null
   );
+  const [environments, setEnvironments] = useState<Environment[]>([]);
+  const [currentEnvironment, setCurrentEnvironment] = useState<string>('');
 
   useEffect(() => {
     // Load saved data on mount
     setSavedRequests(getSavedRequests());
     setRequestHistory(getRequestHistory());
+    setEnvironments(getEnvironments());
+    setCurrentEnvironment(getCurrentEnvironment());
   }, []);
 
   const handleSendRequest = async (request: ApiRequest) => {
@@ -44,13 +58,25 @@ export default function HomePage() {
       return;
     }
 
-    const response = await makeApiRequest(request);
+    // Get current environment variables
+    const currentEnv = environments.find(env => env.id === currentEnvironment);
+    const variables = currentEnv?.variables || {};
+
+    // Substitute variables in request
+    const processedRequest: ApiRequest = {
+      ...request,
+      url: substituteVariables(request.url, variables),
+      headers: substituteVariablesInObject(request.headers, variables),
+      body: substituteVariables(request.body, variables),
+    };
+
+    const response = await makeApiRequest(processedRequest);
     setCurrentResponse(response);
 
     // Save to history
     const history: RequestHistory = {
       id: crypto.randomUUID(),
-      request,
+      request: processedRequest,
       response,
       timestamp: new Date(),
     };
@@ -81,6 +107,16 @@ export default function HomePage() {
     }
   };
 
+  const handleEnvironmentsChange = (newEnvironments: Environment[]) => {
+    setEnvironments(newEnvironments);
+    saveEnvironments(newEnvironments);
+  };
+
+  const handleCurrentEnvironmentChange = (environmentId: string) => {
+    setCurrentEnvironment(environmentId);
+    saveCurrentEnvironment(environmentId);
+  };
+
   return (
     <div className='min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100'>
       <Header />
@@ -89,6 +125,12 @@ export default function HomePage() {
         <div className='grid grid-cols-1 lg:grid-cols-4 gap-6'>
           {/* Left Sidebar */}
           <div className='lg:col-span-1 space-y-6'>
+            <EnvironmentManager
+              environments={environments}
+              currentEnvironment={currentEnvironment}
+              onEnvironmentsChange={handleEnvironmentsChange}
+              onCurrentEnvironmentChange={handleCurrentEnvironmentChange}
+            />
             <SavedRequests
               savedRequests={savedRequests}
               onLoadRequest={handleLoadRequest}

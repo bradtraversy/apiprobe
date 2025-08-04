@@ -6,6 +6,7 @@ import { type ApiRequest, type HttpMethod } from '@/types/api';
 import MethodSelector from './method-selector';
 import UrlInput from './url-input';
 import HeadersEditor from './headers-editor';
+import AuthEditor from './auth-editor';
 import BodyEditor from './body-editor';
 
 interface RequestFormProps {
@@ -139,6 +140,11 @@ const RequestForm = ({
               <UrlInput value={url} onChange={setUrl} />
             </div>
           </div>
+        </div>
+
+        {/* Authorization */}
+        <div>
+          <AuthEditor headers={headers} onChange={setHeaders} />
         </div>
 
         {/* Headers */}

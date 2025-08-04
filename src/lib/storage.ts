@@ -3,6 +3,8 @@ import { type ApiRequest, type RequestHistory } from '@/types/api';
 const STORAGE_KEYS = {
   SAVED_REQUESTS: 'apiprobe_saved_requests',
   REQUEST_HISTORY: 'apiprobe_request_history',
+  ENVIRONMENTS: 'apiprobe_environments',
+  CURRENT_ENVIRONMENT: 'apiprobe_current_environment',
 } as const;
 
 export function saveRequest(request: ApiRequest): void {
@@ -102,5 +104,59 @@ export function deleteHistoryItem(id: string): void {
     );
   } catch (error) {
     console.error('Failed to delete history item:', error);
+  }
+}
+
+// Environment management functions
+export function saveEnvironments(environments: any[]): void {
+  try {
+    localStorage.setItem(STORAGE_KEYS.ENVIRONMENTS, JSON.stringify(environments));
+  } catch (error) {
+    console.error('Failed to save environments:', error);
+  }
+}
+
+export function getEnvironments(): any[] {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEYS.ENVIRONMENTS);
+    if (!saved) {
+      // Create default environment if none exists
+      const defaultEnv = {
+        id: crypto.randomUUID(),
+        name: 'Default',
+        variables: {},
+      };
+      saveEnvironments([defaultEnv]);
+      return [defaultEnv];
+    }
+    return JSON.parse(saved);
+  } catch (error) {
+    console.error('Failed to load environments:', error);
+    return [];
+  }
+}
+
+export function saveCurrentEnvironment(environmentId: string): void {
+  try {
+    localStorage.setItem(STORAGE_KEYS.CURRENT_ENVIRONMENT, environmentId);
+  } catch (error) {
+    console.error('Failed to save current environment:', error);
+  }
+}
+
+export function getCurrentEnvironment(): string {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEYS.CURRENT_ENVIRONMENT);
+    if (!saved) {
+      const environments = getEnvironments();
+      if (environments.length > 0) {
+        saveCurrentEnvironment(environments[0].id);
+        return environments[0].id;
+      }
+    }
+    return saved || '';
+  } catch (error) {
+    console.error('Failed to load current environment:', error);
+    return '';
   }
 }
