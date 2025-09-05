@@ -45,6 +45,15 @@ A modern, feature-rich API testing tool built with Next.js, TypeScript, and Tail
 - **Response Metrics**: Request duration and response size tracking
 - **Error Handling**: Clear error messages and network error handling
 
+### 🔒 **Security Features**
+
+- **Rate Limiting**: 5 requests per minute to prevent API abuse
+- **XSS Protection**: All responses sanitized with DOMPurify
+- **CSP Headers**: Comprehensive Content Security Policy
+- **SSRF Protection**: Updated dependencies to patch vulnerabilities
+- **Secure Headers**: X-Frame-Options, X-Content-Type-Options, and more
+- **Input Validation**: URL and header sanitization
+
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -111,14 +120,22 @@ A modern, feature-rich API testing tool built with Next.js, TypeScript, and Tail
 3. **Access saved requests** from the left sidebar
 4. **Load requests** by clicking on them
 
+### Rate Limiting
+
+- **5 requests per minute** limit for public use
+- **Visual indicator** in the header shows usage (e.g., "2/5 requests used")
+- **Automatic reset** after 60 seconds
+- **Clear feedback** when limit is reached
+
 ## 🛠️ Tech Stack
 
-- **Framework**: [Next.js 14](https://nextjs.org/) with App Router
+- **Framework**: [Next.js 15.5](https://nextjs.org/) with App Router
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
 - **Icons**: [Lucide React](https://lucide.dev/)
 - **State Management**: React Hooks
 - **Storage**: Local Storage for persistence
+- **Security**: DOMPurify for XSS protection, p-throttle for rate limiting
 
 ## 🏗️ Project Structure
 

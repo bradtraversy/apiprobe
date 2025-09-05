@@ -31,9 +31,10 @@ export function getRateLimitStatus() {
 /**
  * Create a throttled function that respects rate limits
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function createThrottledRequest<T extends (...args: any[]) => any>(
   fn: T
-): (...args: Parameters<T>) => ReturnType<T> {
+): T {
   // Create throttle if needed
   if (!currentThrottle) {
     currentThrottle = pThrottle({
@@ -46,12 +47,13 @@ export function createThrottledRequest<T extends (...args: any[]) => any>(
   }
   
   // Wrap the function to track request count
-  const throttled = currentThrottle(async (...args: Parameters<T>) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const throttled = currentThrottle(async (...args: any[]) => {
     requestCount++;
     return fn(...args);
   });
   
-  return throttled as any;
+  return throttled as unknown as T;
 }
 
 /**

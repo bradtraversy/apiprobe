@@ -89,9 +89,10 @@ export default function HomePage() {
     try {
       response = await makeApiRequest(processedRequest);
       setCurrentResponse(response);
-    } catch (error: any) {
+    } catch (error) {
       // Handle rate limit error from p-throttle
-      if (error?.message?.includes('Rate limit')) {
+      const errorMessage = error instanceof Error ? error.message : '';
+      if (errorMessage.includes('Rate limit')) {
         const status = getRateLimitStatus();
         const resetInSeconds = Math.ceil(status.resetIn / 1000);
         alert(`Rate limit exceeded. Please wait ${resetInSeconds} seconds before trying again.`);
