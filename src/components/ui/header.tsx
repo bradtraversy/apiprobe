@@ -1,5 +1,6 @@
 import { Zap } from 'lucide-react';
 import GitHubLink from './github-link';
+import RateLimitSettings from './rate-limit-settings';
 
 const Header = () => {
   return (
@@ -19,7 +20,10 @@ const Header = () => {
               </p>
             </div>
           </div>
-          <GitHubLink />
+          <div className='flex items-center gap-4'>
+            <RateLimitSettings />
+            <GitHubLink />
+          </div>
         </div>
       </div>
     </div>

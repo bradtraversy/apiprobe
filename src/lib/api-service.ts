@@ -1,7 +1,9 @@
 import { type ApiRequest, type ApiResponse } from '@/types/api';
 import { sanitizeUrl, sanitizeHeaders } from '@/lib/validation';
+import { createThrottledRequest, canMakeRequest, getRateLimitStatus } from '@/lib/rate-limit';
 
-export async function makeApiRequest(
+// Create the actual request function
+async function _makeApiRequest(
   request: ApiRequest
 ): Promise<ApiResponse> {
   const startTime = Date.now();
@@ -65,6 +67,18 @@ export async function makeApiRequest(
       size: 0,
     };
   }
+}
+
+// Export the throttled version
+export const makeApiRequest = createThrottledRequest(_makeApiRequest);
+
+// Export a function to check rate limit status before making a request
+export function checkRateLimit(): { canRequest: boolean; status: ReturnType<typeof getRateLimitStatus> } {
+  const status = getRateLimitStatus();
+  return {
+    canRequest: canMakeRequest(),
+    status
+  };
 }
 
 export function validateRequest(request: ApiRequest): string | null {

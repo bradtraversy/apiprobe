@@ -1,3 +1,5 @@
+'use client';
+
 import { cn } from '@/lib/utils';
 import {
   Clock,
@@ -7,6 +9,7 @@ import {
   AlertCircle,
   Info,
 } from 'lucide-react';
+import DOMPurify from 'dompurify';
 
 interface ResponseViewerProps {
   response: {
@@ -65,6 +68,16 @@ const ResponseViewer = ({ response, className }: ResponseViewerProps) => {
     return body;
   };
 
+  const sanitizeResponse = (body: string): string => {
+    // Remove all HTML tags and attributes to prevent XSS
+    // This ensures only plain text is displayed
+    return DOMPurify.sanitize(body, { 
+      ALLOWED_TAGS: [],
+      ALLOWED_ATTR: [],
+      KEEP_CONTENT: true
+    });
+  };
+
   const contentType = response.headers['content-type'] || 'text/plain';
 
   return (
@@ -103,8 +116,8 @@ const ResponseViewer = ({ response, className }: ResponseViewerProps) => {
         <div className='bg-slate-50/50 rounded-lg p-4 max-h-40 overflow-y-auto border border-slate-200/50'>
           {Object.entries(response.headers).map(([key, value]) => (
             <div key={key} className='text-sm font-mono py-1'>
-              <span className='text-blue-600 font-semibold'>{key}:</span>
-              <span className='text-slate-700 ml-2'>{value}</span>
+              <span className='text-blue-600 font-semibold'>{sanitizeResponse(key)}:</span>
+              <span className='text-slate-700 ml-2'>{sanitizeResponse(value)}</span>
             </div>
           ))}
         </div>
@@ -117,7 +130,7 @@ const ResponseViewer = ({ response, className }: ResponseViewerProps) => {
           Response Body
         </h3>
         <pre className='bg-slate-50/50 rounded-lg p-4 max-h-[800px] overflow-y-auto text-sm font-mono whitespace-pre-wrap border border-slate-200/50'>
-          {formatBody(response.body, contentType)}
+          {sanitizeResponse(formatBody(response.body, contentType))}
         </pre>
       </div>
     </div>

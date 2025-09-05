@@ -6,7 +6,8 @@ import {
   type ApiResponse,
   type RequestHistory,
 } from '@/types/api';
-import { makeApiRequest, validateRequest } from '@/lib/api-service';
+import { makeApiRequest, validateRequest, checkRateLimit } from '@/lib/api-service';
+import { getRateLimitStatus } from '@/lib/rate-limit';
 import {
   saveRequest,
   saveToHistory,
@@ -76,8 +77,27 @@ export default function HomePage() {
       return;
     }
 
-    const response = await makeApiRequest(processedRequest);
-    setCurrentResponse(response);
+    // Check rate limit before making request
+    const { canRequest, status } = checkRateLimit();
+    if (!canRequest) {
+      const resetInSeconds = Math.ceil(status.resetIn / 1000);
+      alert(`Rate limit exceeded. You have used ${status.current}/${status.limit} requests. Please wait ${resetInSeconds} seconds before trying again.`);
+      return;
+    }
+
+    let response: ApiResponse;
+    try {
+      response = await makeApiRequest(processedRequest);
+      setCurrentResponse(response);
+    } catch (error: any) {
+      // Handle rate limit error from p-throttle
+      if (error?.message?.includes('Rate limit')) {
+        const status = getRateLimitStatus();
+        const resetInSeconds = Math.ceil(status.resetIn / 1000);
+        alert(`Rate limit exceeded. Please wait ${resetInSeconds} seconds before trying again.`);
+      }
+      return;
+    }
 
     // Check if this request already exists in history
     const existingHistory = requestHistory.find(
