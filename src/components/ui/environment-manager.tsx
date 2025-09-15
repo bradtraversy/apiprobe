@@ -169,7 +169,7 @@ const EnvironmentManager = ({
               </div>
             ))}
             <div className='border-t border-slate-200 p-2'>
-              <div className='flex gap-2'>
+              <div className='flex items-center gap-2'>
                 <Input
                   value={newEnvName}
                   onChange={(e) => setNewEnvName(e.target.value)}
