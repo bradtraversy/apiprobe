@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { Toaster } from 'react-hot-toast';
 
 export const metadata: Metadata = {
   title: 'API Probe - Simple API Testing Tool',
@@ -17,6 +18,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className='antialiased'>{children}</body>
+      <Toaster />
     </html>
   );
 }

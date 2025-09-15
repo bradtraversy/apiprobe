@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Settings, Trash2, AlertTriangle } from 'lucide-react';
 import { clearAllData } from '@/lib/storage';
+import { toast } from 'react-hot-toast';
 
 interface SettingsPanelProps {
   onDataCleared: () => void;
@@ -13,13 +14,12 @@ const SettingsPanel = ({ onDataCleared, className }: SettingsPanelProps) => {
   const [showClearConfirmation, setShowClearConfirmation] = useState(false);
 
   const handleClearAllData = () => {
-    if (confirm('Are you sure you want to clear all data? This will remove:\n\n• All saved requests\n• Request history\n• Environment variables\n• All settings\n\nThis action cannot be undone.')) {
-      clearAllData();
-      onDataCleared();
-      setShowClearConfirmation(false);
-      setIsOpen(false);
-      alert('All data has been cleared successfully.');
-    }
+    clearAllData();
+    onDataCleared();
+    setShowClearConfirmation(false);
+    setIsOpen(false);
+
+    toast.success('Data has been cleared successfully!');
   };
 
   return (
@@ -36,20 +36,25 @@ const SettingsPanel = ({ onDataCleared, className }: SettingsPanelProps) => {
 
       {isOpen && (
         <div className='mt-3 p-4 bg-white border border-slate-200 rounded-lg shadow-sm'>
-          <h3 className='text-sm font-medium text-slate-700 mb-3'>Application Settings</h3>
-          
+          <h3 className='text-sm font-medium text-slate-700 mb-3'>
+            Application Settings
+          </h3>
+
           <div className='space-y-3'>
             {/* Clear All Data Section */}
             <div className='border-t border-slate-100 pt-3'>
               <div className='flex items-center gap-2 mb-2'>
                 <AlertTriangle className='w-4 h-4 text-red-500' />
-                <h4 className='text-sm font-medium text-slate-700'>Danger Zone</h4>
+                <h4 className='text-sm font-medium text-slate-700'>
+                  Danger Zone
+                </h4>
               </div>
-              
+
               <p className='text-xs text-slate-600 mb-3'>
-                Clear all stored data including requests, history, and environment variables.
+                Clear all stored data including requests, history, and
+                environment variables.
               </p>
-              
+
               <Button
                 variant='outline'
                 size='sm'
@@ -70,24 +75,26 @@ const SettingsPanel = ({ onDataCleared, className }: SettingsPanelProps) => {
           <div className='bg-white rounded-lg p-6 w-full max-w-md'>
             <div className='flex items-center gap-3 mb-4'>
               <AlertTriangle className='w-6 h-6 text-red-500' />
-              <h3 className='text-lg font-semibold text-slate-800'>Clear All Data</h3>
+              <h3 className='text-lg font-semibold text-slate-800'>
+                Clear All Data
+              </h3>
             </div>
-            
+
             <p className='text-sm text-slate-600 mb-6'>
               This will permanently delete all your:
             </p>
-            
+
             <ul className='text-sm text-slate-600 mb-6 space-y-1'>
               <li>• Saved requests</li>
               <li>• Request history</li>
               <li>• Environment variables</li>
               <li>• All application settings</li>
             </ul>
-            
+
             <p className='text-sm text-red-600 mb-6 font-medium'>
               This action cannot be undone!
             </p>
-            
+
             <div className='flex gap-3'>
               <Button
                 variant='outline'
@@ -110,4 +117,4 @@ const SettingsPanel = ({ onDataCleared, className }: SettingsPanelProps) => {
   );
 };
 
-export default SettingsPanel; 
+export default SettingsPanel;

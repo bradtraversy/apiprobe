@@ -34,6 +34,7 @@ import ResponseViewerContainer from '@/components/ui/response-viewer-container';
 import EnvironmentManager from '@/components/ui/environment-manager';
 import SecurityWarning from '@/components/ui/security-warning';
 import SettingsPanel from '@/components/ui/settings-panel';
+import toast from 'react-hot-toast';
 
 export default function HomePage() {
   const [currentResponse, setCurrentResponse] = useState<ApiResponse | null>(
@@ -73,7 +74,7 @@ export default function HomePage() {
     // Validate the processed request (after variable substitution)
     const validationError = validateRequest(processedRequest);
     if (validationError) {
-      alert(validationError);
+      toast.error(validationError)
       return;
     }
 
@@ -81,7 +82,7 @@ export default function HomePage() {
     const { canRequest, status } = checkRateLimit();
     if (!canRequest) {
       const resetInSeconds = Math.ceil(status.resetIn / 1000);
-      alert(`Rate limit exceeded. You have used ${status.current}/${status.limit} requests. Please wait ${resetInSeconds} seconds before trying again.`);
+      toast.error(`Rate limit exceeded. You have used ${status.current}/${status.limit} requests. Please wait ${resetInSeconds} seconds before trying again.`);
       return;
     }
 
@@ -95,7 +96,7 @@ export default function HomePage() {
       if (errorMessage.includes('Rate limit')) {
         const status = getRateLimitStatus();
         const resetInSeconds = Math.ceil(status.resetIn / 1000);
-        alert(`Rate limit exceeded. Please wait ${resetInSeconds} seconds before trying again.`);
+        toast.error(`Rate limit exceeded. Please wait ${resetInSeconds} seconds before trying again.`);
       }
       return;
     }
