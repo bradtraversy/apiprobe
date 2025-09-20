@@ -11,6 +11,7 @@ import {
   Globe,
   ChevronDown,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 interface Environment {
   id: string;
@@ -339,12 +340,12 @@ const EnvironmentManager = ({
                          if (newVarKey.trim() && newVarValue.trim()) {
                            // Validate variable name and value
                            if (!isValidVariableName(newVarKey.trim())) {
-                             alert('Invalid variable name. Use only letters, numbers, underscores, and hyphens. Must start with a letter.');
+                             toast.error('Invalid variable name. Use only letters, numbers, underscores, and hyphens. Must start with a letter.');
                              return;
                            }
                            
                            if (!isValidVariableValue(newVarValue.trim())) {
-                             alert('Invalid variable value. Contains potentially dangerous content.');
+                             toast.error('Invalid variable value. Contains potentially dangerous content.');
                              return;
                            }
                            
