@@ -11,9 +11,9 @@
   "dependencies": {
     "@types/dompurify": "^3.0.5",
     "clsx": "^2.1.1",
-    "dompurify": "^3.2.6",
+    "dompurify": "^3.4.2",
     "lucide-react": "^0.536.0",
-    "next": "15.5.2",
+    "next": "15.5.18",
     "p-throttle": "^8.0.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
@@ -27,7 +27,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "15.5.2",
+    "eslint-config-next": "15.5.18",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
