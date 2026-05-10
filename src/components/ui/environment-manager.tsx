@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { isValidVariableName, isValidVariableValue } from '@/lib/validation';
@@ -60,7 +60,6 @@ const EnvironmentManager = ({
     const newEnvironments = environments.filter((env) => env.id !== id);
     onEnvironmentsChange(newEnvironments);
 
-    // Switch to first available environment or create default
     if (newEnvironments.length > 0) {
       onCurrentEnvironmentChange(newEnvironments[0].id);
     } else {
@@ -72,6 +71,7 @@ const EnvironmentManager = ({
       onEnvironmentsChange([defaultEnv]);
       onCurrentEnvironmentChange(defaultEnv.id);
     }
+    setEditingEnvironment(null);
   };
 
   const updateEnvironment = (updatedEnv: Environment) => {
@@ -81,107 +81,69 @@ const EnvironmentManager = ({
     onEnvironmentsChange(newEnvironments);
   };
 
-  const addVariable = (envId: string) => {
-    if (newVarKey.trim() && newVarValue.trim()) {
-      const env = environments.find((e) => e.id === envId);
-      if (env) {
-        const updatedEnv = {
-          ...env,
-          variables: {
-            ...env.variables,
-            [newVarKey.trim()]: newVarValue.trim(),
-          },
-        };
-        updateEnvironment(updatedEnv);
-        setNewVarKey('');
-        setNewVarValue('');
-      }
-    }
-  };
-
-  const removeVariable = (envId: string, key: string) => {
-    const env = environments.find((e) => e.id === envId);
-    if (env) {
-      const newVariables = { ...env.variables };
-      delete newVariables[key];
-      const updatedEnv = {
-        ...env,
-        variables: newVariables,
-      };
-      updateEnvironment(updatedEnv);
-    }
-  };
-
-  const updateVariable = (envId: string, key: string, value: string) => {
-    const env = environments.find((e) => e.id === envId);
-    if (env) {
-      const newVariables = { ...env.variables };
-      newVariables[key] = value;
-      const updatedEnv = {
-        ...env,
-        variables: newVariables,
-      };
-      updateEnvironment(updatedEnv);
-    }
-  };
-
   return (
-    <div className={className}>
+    <div
+      className={`bg-surface border border-line rounded-md p-5 ${
+        className ?? ''
+      }`}
+    >
       <div className='flex items-center gap-2 mb-3'>
-        <Globe className='w-4 h-4 text-slate-600' />
-        <label className='text-sm font-medium text-slate-700'>
+        <Globe className='w-3.5 h-3.5 text-fg-muted' />
+        <h2 className='text-xs font-semibold text-fg-muted uppercase tracking-wider'>
           Environment
-        </label>
+        </h2>
       </div>
 
-      {/* Environment Selector */}
       <div className='relative'>
         <Button
           variant='outline'
+          size='sm'
           onClick={() => setIsOpen(!isOpen)}
           className='w-full justify-between'
         >
           <span className='flex items-center gap-2'>
-            <Globe className='w-4 h-4' />
+            <Globe className='w-3.5 h-3.5 text-fg-muted' />
             {currentEnv?.name || 'No Environment'}
           </span>
           <ChevronDown
-            className={`w-4 h-4 transition-transform ${
+            className={`w-3.5 h-3.5 transition-transform ${
               isOpen ? 'rotate-180' : ''
             }`}
           />
         </Button>
 
         {isOpen && (
-          <div className='absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-10 max-h-60 overflow-y-auto'>
+          <div className='absolute top-full left-0 right-0 mt-1 bg-surface border border-line rounded-md shadow-lg z-10 max-h-60 overflow-y-auto'>
             {environments.map((env) => (
               <div
                 key={env.id}
-                className='flex items-center justify-between p-2 hover:bg-slate-50 cursor-pointer'
+                className='flex items-center justify-between px-3 py-2 hover:bg-card-hover cursor-pointer text-sm text-fg'
                 onClick={() => {
                   onCurrentEnvironmentChange(env.id);
                   setIsOpen(false);
                 }}
               >
-                <span className='text-sm'>{env.name}</span>
+                <span>{env.name}</span>
                 {env.id === currentEnvironment && (
-                  <div className='w-2 h-2 bg-blue-500 rounded-full' />
+                  <div className='w-1.5 h-1.5 bg-accent rounded-full' />
                 )}
               </div>
             ))}
-            <div className='border-t border-slate-200 p-2'>
+            <div className='border-t border-line p-2'>
               <div className='flex items-center gap-2'>
                 <Input
                   value={newEnvName}
                   onChange={(e) => setNewEnvName(e.target.value)}
-                  placeholder='New environment name'
-                  className='flex-1 text-sm'
-                  onKeyPress={(e) => e.key === 'Enter' && addEnvironment()}
+                  placeholder='New environment'
+                  className='flex-1 h-8 text-xs'
+                  onKeyDown={(e) => e.key === 'Enter' && addEnvironment()}
                 />
                 <Button
                   size='sm'
+                  aria-label='Add environment'
                   onClick={addEnvironment}
                   disabled={!newEnvName.trim()}
+                  className='h-8 w-8 p-0'
                 >
                   <Plus className='w-3 h-3' />
                 </Button>
@@ -191,35 +153,37 @@ const EnvironmentManager = ({
         )}
       </div>
 
-      {/* Environment Variables */}
       {currentEnv && (
-        <div className='mt-4 space-y-3'>
+        <div className='mt-4 space-y-2'>
           <div className='flex items-center justify-between'>
-            <h4 className='text-sm font-medium text-slate-700'>Variables</h4>
+            <h4 className='text-[10px] font-semibold text-fg-faint uppercase tracking-wider'>
+              Variables
+            </h4>
             <Button
               variant='ghost'
               size='sm'
+              aria-label='Edit environment'
               onClick={() => setEditingEnvironment(currentEnv)}
+              className='h-6 w-6 p-0'
             >
-              <Settings className='w-4 h-4' />
+              <Settings className='w-3 h-3' />
             </Button>
           </div>
 
-          {/* Variable List */}
-          <div className='space-y-2'>
+          <div className='space-y-1.5'>
             {Object.entries(currentEnv.variables).map(([key, value]) => (
-              <div key={key} className='flex items-center gap-2 text-sm'>
-                <span className='font-mono bg-slate-100 px-2 py-1 rounded'>
+              <div key={key} className='flex items-center gap-2 text-xs'>
+                <span className='font-mono bg-card border border-line px-1.5 py-0.5 rounded text-accent'>
                   {`{{${key}}}`}
                 </span>
-                <span className='text-slate-500'>→</span>
-                <span className='font-mono bg-slate-100 px-2 py-1 rounded'>
+                <span className='text-fg-faint'>→</span>
+                <span className='font-mono text-fg-muted truncate'>
                   {value}
                 </span>
               </div>
             ))}
             {Object.keys(currentEnv.variables).length === 0 && (
-              <p className='text-xs text-slate-500 italic'>
+              <p className='text-xs text-fg-faint italic'>
                 No variables defined
               </p>
             )}
@@ -227,25 +191,27 @@ const EnvironmentManager = ({
         </div>
       )}
 
-      {/* Environment Editor Modal */}
       {editingEnvironment && (
-        <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'>
-          <div className='bg-white rounded-lg p-6 w-full max-w-md max-h-[80vh] overflow-y-auto'>
+        <div className='fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4'>
+          <div className='bg-surface border border-line rounded-md p-6 w-full max-w-md max-h-[80vh] overflow-y-auto'>
             <div className='flex items-center justify-between mb-4'>
-              <h3 className='text-lg font-semibold'>Edit Environment</h3>
+              <h3 className='text-base font-semibold text-fg'>
+                Edit Environment
+              </h3>
               <Button
                 variant='ghost'
                 size='sm'
+                aria-label='Close'
                 onClick={() => setEditingEnvironment(null)}
+                className='h-6 w-6 p-0'
               >
-                <X className='w-4 h-4' />
+                <X className='w-3.5 h-3.5' />
               </Button>
             </div>
 
             <div className='space-y-4'>
-              {/* Environment Name */}
               <div>
-                <label className='block text-sm font-medium mb-2'>
+                <label className='block text-xs font-semibold text-fg-muted uppercase tracking-wider mb-2'>
                   Environment Name
                 </label>
                 <Input
@@ -259,9 +225,8 @@ const EnvironmentManager = ({
                 />
               </div>
 
-              {/* Variables */}
               <div>
-                <label className='block text-sm font-medium mb-2'>
+                <label className='block text-xs font-semibold text-fg-muted uppercase tracking-wider mb-2'>
                   Variables
                 </label>
                 <div className='space-y-2'>
@@ -282,7 +247,7 @@ const EnvironmentManager = ({
                             });
                           }}
                           placeholder='Variable name'
-                          className='flex-1'
+                          className='flex-1 font-mono text-xs'
                         />
                         <Input
                           value={value}
@@ -297,11 +262,12 @@ const EnvironmentManager = ({
                             });
                           }}
                           placeholder='Variable value'
-                          className='flex-1'
+                          className='flex-1 font-mono text-xs'
                         />
                         <Button
                           variant='ghost'
                           size='sm'
+                          aria-label={`Remove variable ${key}`}
                           onClick={() => {
                             const newVariables = {
                               ...editingEnvironment.variables,
@@ -312,82 +278,85 @@ const EnvironmentManager = ({
                               variables: newVariables,
                             });
                           }}
+                          className='h-9 w-9 p-0 text-fg-muted hover:text-[color:var(--color-method-delete-fg)]'
                         >
-                          <Trash2 className='w-4 h-4' />
+                          <Trash2 className='w-3.5 h-3.5' />
                         </Button>
                       </div>
                     )
                   )}
 
-                  {/* Add New Variable */}
-                  <div className='flex gap-2'>
+                  <div className='flex gap-2 pt-1'>
                     <Input
                       value={newVarKey}
                       onChange={(e) => setNewVarKey(e.target.value)}
                       placeholder='Variable name'
-                      className='flex-1'
+                      className='flex-1 font-mono text-xs'
                     />
                     <Input
                       value={newVarValue}
                       onChange={(e) => setNewVarValue(e.target.value)}
                       placeholder='Variable value'
-                      className='flex-1'
+                      className='flex-1 font-mono text-xs'
                     />
-                                         <Button
-                       variant='outline'
-                       size='sm'
-                       onClick={() => {
-                         if (newVarKey.trim() && newVarValue.trim()) {
-                           // Validate variable name and value
-                           if (!isValidVariableName(newVarKey.trim())) {
-                             toast.error('Invalid variable name. Use only letters, numbers, underscores, and hyphens. Must start with a letter.');
-                             return;
-                           }
-                           
-                           if (!isValidVariableValue(newVarValue.trim())) {
-                             toast.error('Invalid variable value. Contains potentially dangerous content.');
-                             return;
-                           }
-                           
-                           const newVariables = {
-                             ...editingEnvironment.variables,
-                             [newVarKey.trim()]: newVarValue.trim(),
-                           };
-                           setEditingEnvironment({
-                             ...editingEnvironment,
-                             variables: newVariables,
-                           });
-                           setNewVarKey('');
-                           setNewVarValue('');
-                         }
-                       }}
-                       disabled={!newVarKey.trim() || !newVarValue.trim()}
-                     >
-                      <Plus className='w-4 h-4' />
+                    <Button
+                      variant='outline'
+                      size='sm'
+                      aria-label='Add variable'
+                      onClick={() => {
+                        if (newVarKey.trim() && newVarValue.trim()) {
+                          if (!isValidVariableName(newVarKey.trim())) {
+                            toast.error(
+                              'Invalid variable name. Use only letters, numbers, underscores, and hyphens. Must start with a letter.'
+                            );
+                            return;
+                          }
+                          if (!isValidVariableValue(newVarValue.trim())) {
+                            toast.error(
+                              'Invalid variable value. Contains potentially dangerous content.'
+                            );
+                            return;
+                          }
+                          const newVariables = {
+                            ...editingEnvironment.variables,
+                            [newVarKey.trim()]: newVarValue.trim(),
+                          };
+                          setEditingEnvironment({
+                            ...editingEnvironment,
+                            variables: newVariables,
+                          });
+                          setNewVarKey('');
+                          setNewVarValue('');
+                        }
+                      }}
+                      disabled={!newVarKey.trim() || !newVarValue.trim()}
+                      className='h-9 w-9 p-0'
+                    >
+                      <Plus className='w-3.5 h-3.5' />
                     </Button>
                   </div>
                 </div>
               </div>
 
-              {/* Actions */}
-              <div className='flex gap-2 pt-4'>
+              <div className='flex gap-2 justify-end pt-4 border-t border-line'>
                 <Button
+                  variant='destructive'
+                  size='sm'
+                  onClick={() => deleteEnvironment(editingEnvironment.id)}
+                >
+                  <Trash2 className='w-3.5 h-3.5 mr-2' />
+                  Delete
+                </Button>
+                <Button
+                  variant='default'
+                  size='sm'
                   onClick={() => {
                     updateEnvironment(editingEnvironment);
                     setEditingEnvironment(null);
                   }}
-                  className='flex-1'
                 >
-                  <Save className='w-4 h-4 mr-2' />
+                  <Save className='w-3.5 h-3.5 mr-2' />
                   Save
-                </Button>
-                <Button
-                  variant='outline'
-                  onClick={() => deleteEnvironment(editingEnvironment.id)}
-                  className='flex-1'
-                >
-                  <Trash2 className='w-4 h-4 mr-2' />
-                  Delete
                 </Button>
               </div>
             </div>

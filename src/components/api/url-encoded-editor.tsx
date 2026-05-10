@@ -21,7 +21,6 @@ const UrlEncodedEditor = ({
 }: UrlEncodedEditorProps) => {
   const [pairs, setPairs] = useState<KeyValuePair[]>([{ key: '', value: '' }]);
 
-  // Convert body string to key-value pairs
   useEffect(() => {
     if (body.trim()) {
       try {
@@ -43,7 +42,6 @@ const UrlEncodedEditor = ({
     }
   }, [body]);
 
-  // Convert key-value pairs to body string
   const updateBody = (newPairs: KeyValuePair[]) => {
     const validPairs = newPairs.filter((pair) => pair.key.trim() !== '');
     const params = new URLSearchParams();
@@ -54,8 +52,7 @@ const UrlEncodedEditor = ({
   };
 
   const addPair = () => {
-    const newPairs = [...pairs, { key: '', value: '' }];
-    setPairs(newPairs);
+    setPairs([...pairs, { key: '', value: '' }]);
   };
 
   const removePair = (index: number) => {
@@ -73,33 +70,30 @@ const UrlEncodedEditor = ({
 
   return (
     <div className={className}>
-      <div className='space-y-3'>
+      <div className='space-y-2'>
         {pairs.map((pair, index) => (
           <div key={index} className='flex items-center gap-2'>
-            <div className='flex-1'>
-              <Input
-                value={pair.key}
-                onChange={(e) => updatePair(index, 'key', e.target.value)}
-                placeholder='Key'
-                className='text-sm'
-              />
-            </div>
-            <div className='flex-1'>
-              <Input
-                value={pair.value}
-                onChange={(e) => updatePair(index, 'value', e.target.value)}
-                placeholder='Value'
-                className='text-sm'
-              />
-            </div>
+            <Input
+              value={pair.key}
+              onChange={(e) => updatePair(index, 'key', e.target.value)}
+              placeholder='Key'
+              className='flex-1 font-mono text-xs'
+            />
+            <Input
+              value={pair.value}
+              onChange={(e) => updatePair(index, 'value', e.target.value)}
+              placeholder='Value'
+              className='flex-1 font-mono text-xs'
+            />
             {pairs.length > 1 && (
               <Button
                 variant='ghost'
                 size='sm'
+                aria-label='Remove field'
                 onClick={() => removePair(index)}
-                className='p-1 h-8 w-8 text-red-600 hover:bg-red-100'
+                className='h-9 w-9 p-0 text-fg-muted hover:text-[color:var(--color-method-delete-fg)]'
               >
-                <Trash2 className='h-3 w-3' />
+                <Trash2 className='w-3.5 h-3.5' />
               </Button>
             )}
           </div>
@@ -108,9 +102,9 @@ const UrlEncodedEditor = ({
           variant='outline'
           size='sm'
           onClick={addPair}
-          className='flex items-center gap-2 text-blue-600 hover:bg-blue-50'
+          className='gap-2'
         >
-          <Plus className='h-3 w-3' />
+          <Plus className='w-3 h-3' />
           Add Field
         </Button>
       </div>

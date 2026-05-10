@@ -184,7 +184,6 @@ export function clearAllData(): void {
     Object.values(STORAGE_KEYS).forEach((key) => {
       localStorage.removeItem(key);
     });
-    console.log('All application data cleared successfully');
   } catch (error) {
     console.error('Failed to clear application data:', error);
   }

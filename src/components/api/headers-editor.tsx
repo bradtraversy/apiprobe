@@ -41,6 +41,7 @@ const HeadersEditor = ({
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
+      e.preventDefault();
       addHeader();
     }
   };
@@ -61,21 +62,22 @@ const HeadersEditor = ({
                   onChange(newHeaders);
                 }}
                 placeholder='Header name'
-                className='flex-1'
+                className='flex-1 font-mono text-xs'
               />
               <Input
                 value={value}
                 onChange={(e) => updateHeader(key, e.target.value)}
                 placeholder='Header value'
-                className='flex-1'
+                className='flex-1 font-mono text-xs'
               />
               <Button
                 variant='ghost'
                 size='sm'
+                aria-label={`Remove header ${key}`}
                 onClick={() => removeHeader(key)}
-                className='px-2'
+                className='h-9 w-9 p-0 text-fg-muted hover:text-[color:var(--color-method-delete-fg)]'
               >
-                <X className='h-4 w-4' />
+                <X className='w-3.5 h-3.5' />
               </Button>
             </div>
           ))}
@@ -85,24 +87,25 @@ const HeadersEditor = ({
             value={newKey}
             onChange={(e) => setNewKey(e.target.value)}
             placeholder='Header name'
-            className='flex-1'
-            onKeyPress={handleKeyPress}
+            className='flex-1 font-mono text-xs'
+            onKeyDown={handleKeyPress}
           />
           <Input
             value={newValue}
             onChange={(e) => setNewValue(e.target.value)}
             placeholder='Header value'
-            className='flex-1'
-            onKeyPress={handleKeyPress}
+            className='flex-1 font-mono text-xs'
+            onKeyDown={handleKeyPress}
           />
           <Button
             variant='outline'
             size='sm'
+            aria-label='Add header'
             onClick={addHeader}
             disabled={!newKey.trim() || !newValue.trim()}
-            className='px-2'
+            className='h-9 w-9 p-0'
           >
-            <Plus className='h-4 w-4' />
+            <Plus className='w-3.5 h-3.5' />
           </Button>
         </div>
       </div>

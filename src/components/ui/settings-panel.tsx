@@ -18,8 +18,7 @@ const SettingsPanel = ({ onDataCleared, className }: SettingsPanelProps) => {
     onDataCleared();
     setShowClearConfirmation(false);
     setIsOpen(false);
-
-    toast.success('Data has been cleared successfully!');
+    toast.success('Data has been cleared successfully');
   };
 
   return (
@@ -30,38 +29,34 @@ const SettingsPanel = ({ onDataCleared, className }: SettingsPanelProps) => {
         onClick={() => setIsOpen(!isOpen)}
         className='w-full justify-center gap-2'
       >
-        <Settings className='w-4 h-4' />
+        <Settings className='w-3.5 h-3.5' />
         Settings
       </Button>
 
       {isOpen && (
-        <div className='mt-3 p-4 bg-white border border-slate-200 rounded-lg shadow-sm'>
-          <h3 className='text-sm font-medium text-slate-700 mb-3'>
+        <div className='mt-3 p-4 bg-surface border border-line rounded-md'>
+          <h3 className='text-xs font-semibold text-fg-muted uppercase tracking-wider mb-3'>
             Application Settings
           </h3>
 
           <div className='space-y-3'>
-            {/* Clear All Data Section */}
-            <div className='border-t border-slate-100 pt-3'>
+            <div className='border-t border-line pt-3'>
               <div className='flex items-center gap-2 mb-2'>
-                <AlertTriangle className='w-4 h-4 text-red-500' />
-                <h4 className='text-sm font-medium text-slate-700'>
-                  Danger Zone
-                </h4>
+                <AlertTriangle className='w-3.5 h-3.5 text-[color:var(--color-method-delete-fg)]' />
+                <h4 className='text-sm font-medium text-fg'>Danger Zone</h4>
               </div>
 
-              <p className='text-xs text-slate-600 mb-3'>
+              <p className='text-xs text-fg-muted mb-3'>
                 Clear all stored data including requests, history, and
                 environment variables.
               </p>
 
               <Button
-                variant='outline'
+                variant='destructive'
                 size='sm'
                 onClick={() => setShowClearConfirmation(true)}
-                className='text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300'
               >
-                <Trash2 className='w-4 h-4 mr-2' />
+                <Trash2 className='w-3.5 h-3.5 mr-2' />
                 Clear All Data
               </Button>
             </div>
@@ -69,44 +64,45 @@ const SettingsPanel = ({ onDataCleared, className }: SettingsPanelProps) => {
         </div>
       )}
 
-      {/* Clear Confirmation Modal */}
       {showClearConfirmation && (
-        <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'>
-          <div className='bg-white rounded-lg p-6 w-full max-w-md'>
+        <div className='fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4'>
+          <div className='bg-surface border border-line rounded-md p-6 w-full max-w-md'>
             <div className='flex items-center gap-3 mb-4'>
-              <AlertTriangle className='w-6 h-6 text-red-500' />
-              <h3 className='text-lg font-semibold text-slate-800'>
+              <AlertTriangle className='w-5 h-5 text-[color:var(--color-method-delete-fg)]' />
+              <h3 className='text-base font-semibold text-fg'>
                 Clear All Data
               </h3>
             </div>
 
-            <p className='text-sm text-slate-600 mb-6'>
+            <p className='text-sm text-fg-muted mb-3'>
               This will permanently delete all your:
             </p>
 
-            <ul className='text-sm text-slate-600 mb-6 space-y-1'>
-              <li>• Saved requests</li>
-              <li>• Request history</li>
-              <li>• Environment variables</li>
-              <li>• All application settings</li>
+            <ul className='text-sm text-fg-muted mb-4 space-y-1 list-disc list-inside'>
+              <li>Saved requests</li>
+              <li>Request history</li>
+              <li>Environment variables</li>
+              <li>All application settings</li>
             </ul>
 
-            <p className='text-sm text-red-600 mb-6 font-medium'>
-              This action cannot be undone!
+            <p className='text-xs text-[color:var(--color-method-delete-fg)] mb-5 font-medium'>
+              This action cannot be undone.
             </p>
 
-            <div className='flex gap-3'>
+            <div className='flex gap-2 justify-end'>
               <Button
                 variant='outline'
+                size='sm'
                 onClick={() => setShowClearConfirmation(false)}
-                className='flex-1'
               >
                 Cancel
               </Button>
               <Button
+                variant='destructive'
+                size='sm'
                 onClick={handleClearAllData}
-                className='flex-1 bg-red-600 hover:bg-red-700'
               >
+                <Trash2 className='w-3.5 h-3.5 mr-2' />
                 Clear All Data
               </Button>
             </div>

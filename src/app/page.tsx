@@ -140,18 +140,46 @@ export default function HomePage() {
     setSelectedRequest(request);
   };
 
+  const confirmDelete = (message: string, onConfirm: () => void) => {
+    toast(
+      (t) => (
+        <div className='flex items-center gap-3'>
+          <span className='text-sm text-fg'>{message}</span>
+          <button
+            type='button'
+            onClick={() => {
+              onConfirm();
+              toast.dismiss(t.id);
+            }}
+            className='px-2 py-1 text-xs font-medium rounded border border-line bg-card text-[color:var(--color-method-delete-fg)] hover:border-[color:var(--color-method-delete-fg)]/40 hover:bg-card-hover transition-colors'
+          >
+            Delete
+          </button>
+          <button
+            type='button'
+            onClick={() => toast.dismiss(t.id)}
+            className='px-2 py-1 text-xs font-medium rounded border border-line bg-card text-fg hover:bg-card-hover transition-colors'
+          >
+            Cancel
+          </button>
+        </div>
+      ),
+      { duration: 6000 }
+    );
+  };
+
   const handleDeleteRequest = (id: string) => {
-    if (confirm('Are you sure you want to delete this request?')) {
+    confirmDelete('Delete this request?', () => {
       deleteSavedRequest(id);
       setSavedRequests(getSavedRequests());
-    }
+    });
   };
 
   const handleDeleteHistory = (id: string) => {
-    if (confirm('Are you sure you want to delete this history item?')) {
+    confirmDelete('Delete this history item?', () => {
       deleteHistoryItem(id);
       setRequestHistory(getRequestHistory());
-    }
+    });
   };
 
   const handleEnvironmentsChange = (newEnvironments: Environment[]) => {
@@ -175,14 +203,14 @@ export default function HomePage() {
   };
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100'>
+    <div className='min-h-screen bg-canvas'>
       <Header />
 
-      <div className='container mx-auto px-6 py-8'>
+      <div className='max-w-[1400px] mx-auto px-6 py-8'>
         <SecurityWarning className='mb-6' />
-        <div className='grid grid-cols-1 lg:grid-cols-4 gap-6'>
+        <div className='grid grid-cols-1 lg:grid-cols-4 gap-5'>
           {/* Left Sidebar */}
-          <div className='lg:col-span-1 space-y-6 cursor-pointer'>
+          <div className='lg:col-span-1 space-y-5'>
             <EnvironmentManager
               environments={environments}
               currentEnvironment={currentEnvironment}
@@ -211,7 +239,7 @@ export default function HomePage() {
           </div>
 
           {/* Main Content */}
-          <div className='lg:col-span-3 space-y-6'>
+          <div className='lg:col-span-3 space-y-5'>
             <RequestFormContainer
               onSend={handleSendRequest}
               onSave={handleSaveRequest}

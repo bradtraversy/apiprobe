@@ -29,11 +29,13 @@ const BodyEditor = ({
   return (
     <div className={className}>
       <div className='flex items-center gap-2 mb-2'>
-        <label className='text-sm font-medium'>Content-Type:</label>
+        <label className='text-xs font-semibold text-fg-muted uppercase tracking-wider'>
+          Content-Type
+        </label>
         <Select
           value={contentType}
           onChange={(e) => onContentTypeChange(e.target.value)}
-          className='w-48'
+          className='w-56 text-xs font-mono'
         >
           <option value='application/json'>application/json</option>
           <option value='application/xml'>application/xml</option>
@@ -44,8 +46,9 @@ const BodyEditor = ({
         </Select>
         {contentType === 'application/json' && (
           <button
+            type='button'
             onClick={formatJson}
-            className='text-xs text-blue-600 hover:text-blue-800'
+            className='text-xs text-accent hover:text-accent-hover transition-colors'
           >
             Format JSON
           </button>
@@ -59,12 +62,12 @@ const BodyEditor = ({
           onChange={(e) => onChange(e.target.value)}
           placeholder={
             contentType === 'application/json'
-              ? '{"key": "value"}'
+              ? '{ "key": "value" }'
               : contentType === 'application/xml'
               ? '<root><item>value</item></root>'
               : 'Enter request body...'
           }
-          className='min-h-[200px] font-mono text-sm'
+          className='min-h-[180px] font-mono text-xs'
         />
       )}
     </div>

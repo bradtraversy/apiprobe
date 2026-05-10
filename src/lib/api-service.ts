@@ -20,7 +20,11 @@ async function _makeApiRequest(
 
     // Prepare body
     let body: string | undefined;
-    if (request.method !== 'GET' && request.method !== 'HEAD' && request.body) {
+    const methodAllowsBody =
+      request.method !== 'GET' &&
+      request.method !== 'HEAD' &&
+      request.method !== 'OPTIONS';
+    if (methodAllowsBody && request.body) {
       body = request.body;
     }
 
@@ -48,7 +52,7 @@ async function _makeApiRequest(
       headers: responseHeaders,
       body: responseText,
       duration,
-      size: responseText.length,
+      size: new TextEncoder().encode(responseText).length,
     };
   } catch (error) {
     const endTime = Date.now();

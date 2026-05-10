@@ -11,20 +11,19 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         className={cn(
-          'inline-flex items-center justify-center rounded-xl font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none shadow-sm hover:shadow-md',
+          'inline-flex items-center justify-center rounded-md font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas disabled:opacity-50 disabled:pointer-events-none',
           {
-            'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-blue-500/25':
-              variant === 'default',
-            'border border-slate-300 bg-white/80 backdrop-blur-sm hover:bg-white hover:border-slate-400 text-slate-700':
+            'bg-accent text-canvas hover:bg-accent-hover': variant === 'default',
+            'bg-card text-fg border border-line hover:bg-card-hover hover:border-line-strong':
               variant === 'outline',
-            'hover:bg-slate-100/80 text-slate-700': variant === 'ghost',
-            'bg-gradient-to-r from-red-600 to-pink-600 text-white hover:from-red-700 hover:to-pink-700 shadow-red-500/25':
+            'text-fg-muted hover:text-fg hover:bg-card': variant === 'ghost',
+            'bg-card text-[color:var(--color-method-delete-fg)] border border-line hover:border-[color:var(--color-method-delete-fg)]/40 hover:bg-card-hover':
               variant === 'destructive',
           },
           {
-            'h-8 px-3 text-sm': size === 'sm',
-            'h-10 px-4 py-2': size === 'md',
-            'h-12 px-8 text-lg': size === 'lg',
+            'h-8 px-3 text-xs': size === 'sm',
+            'h-9 px-4 text-sm': size === 'md',
+            'h-11 px-6 text-base': size === 'lg',
           },
           className
         )}

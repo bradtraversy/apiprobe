@@ -14,12 +14,12 @@ const RequestFormContainer = ({
   initialRequest,
 }: RequestFormContainerProps) => {
   return (
-    <div className='bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8'>
-      <div className='flex items-center gap-3 mb-6'>
-        <div className='w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center'>
-          <Zap className='w-4 h-4 text-white' />
-        </div>
-        <h2 className='text-xl font-semibold text-slate-800'>New Request</h2>
+    <div className='bg-surface border border-line rounded-md p-6'>
+      <div className='flex items-center gap-2 mb-5'>
+        <Zap className='w-3.5 h-3.5 text-accent' />
+        <h2 className='text-xs font-semibold text-fg-muted uppercase tracking-wider'>
+          New Request
+        </h2>
       </div>
       <RequestForm
         onSend={onSend}

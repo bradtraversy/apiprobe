@@ -15,34 +15,30 @@ const AuthEditor = ({ headers, onChange, className }: AuthEditorProps) => {
   const [token, setToken] = useState('');
   const [showToken, setShowToken] = useState(false);
 
-  // Extract current auth from headers
+  const authHeader =
+    headers['Authorization'] || headers['authorization'] || '';
+
   useEffect(() => {
-    const authHeader = headers['Authorization'] || headers['authorization'];
-    if (authHeader) {
-      if (authHeader.startsWith('Bearer ')) {
-        setAuthType('bearer');
-        setToken(authHeader.replace('Bearer ', ''));
-      } else if (authHeader.startsWith('Basic ')) {
-        setAuthType('basic');
-        setToken(authHeader.replace('Basic ', ''));
-      } else {
-        setAuthType('custom');
-        setToken(authHeader);
-      }
+    if (authHeader.startsWith('Bearer ')) {
+      setAuthType('bearer');
+      setToken(authHeader.replace('Bearer ', ''));
+    } else if (authHeader.startsWith('Basic ')) {
+      setAuthType('basic');
+      setToken(authHeader.replace('Basic ', ''));
+    } else if (authHeader) {
+      setAuthType('custom');
+      setToken(authHeader);
     } else {
       setAuthType('none');
       setToken('');
     }
-  }, [headers]);
+  }, [authHeader]);
 
   const updateAuth = (type: string, value: string) => {
     const newHeaders = { ...headers };
-    
-    // Remove existing auth headers
     delete newHeaders['Authorization'];
     delete newHeaders['authorization'];
-    
-    // Add new auth header
+
     if (type === 'bearer' && value.trim()) {
       newHeaders['Authorization'] = `Bearer ${value.trim()}`;
     } else if (type === 'basic' && value.trim()) {
@@ -50,7 +46,7 @@ const AuthEditor = ({ headers, onChange, className }: AuthEditorProps) => {
     } else if (type === 'custom' && value.trim()) {
       newHeaders['Authorization'] = value.trim();
     }
-    
+
     onChange(newHeaders);
   };
 
@@ -69,16 +65,18 @@ const AuthEditor = ({ headers, onChange, className }: AuthEditorProps) => {
 
   return (
     <div className={className}>
-      <div className='flex items-center gap-2 mb-3'>
-        <Shield className='w-4 h-4 text-slate-600' />
-        <label className='text-sm font-medium text-slate-700'>Authorization</label>
+      <div className='flex items-center gap-2 mb-2'>
+        <Shield className='w-3.5 h-3.5 text-fg-muted' />
+        <label className='text-xs font-semibold text-fg-muted uppercase tracking-wider'>
+          Authorization
+        </label>
       </div>
-      
-      <div className='space-y-3'>
+
+      <div className='space-y-2'>
         <Select
           value={authType}
           onChange={(e) => handleAuthTypeChange(e.target.value)}
-          className='w-full'
+          className='w-full text-xs'
         >
           <option value='none'>No Auth</option>
           <option value='bearer'>Bearer Token</option>
@@ -93,25 +91,26 @@ const AuthEditor = ({ headers, onChange, className }: AuthEditorProps) => {
               value={token}
               onChange={(e) => handleTokenChange(e.target.value)}
               placeholder={
-                authType === 'bearer' 
+                authType === 'bearer'
                   ? 'Enter your bearer token'
                   : authType === 'basic'
-                  ? 'Enter username:password (will be base64 encoded)'
-                  : 'Enter your authorization header value'
+                  ? 'username:password (will be base64 encoded)'
+                  : 'authorization header value'
               }
-              className='pr-10'
+              className='pr-9 font-mono text-xs'
             />
             <Button
               type='button'
               variant='ghost'
               size='sm'
+              aria-label={showToken ? 'Hide token' : 'Show token'}
               onClick={() => setShowToken(!showToken)}
-              className='absolute right-1 top-1/2 -translate-y-1/2 p-1 h-6 w-6'
+              className='absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0'
             >
               {showToken ? (
-                <EyeOff className='h-3 w-3 text-slate-500' />
+                <EyeOff className='h-3 w-3' />
               ) : (
-                <Eye className='h-3 w-3 text-slate-500' />
+                <Eye className='h-3 w-3' />
               )}
             </Button>
           </div>
@@ -121,4 +120,4 @@ const AuthEditor = ({ headers, onChange, className }: AuthEditorProps) => {
   );
 };
 
-export default AuthEditor; 
+export default AuthEditor;

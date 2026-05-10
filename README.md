@@ -47,10 +47,9 @@ A modern, feature-rich API testing tool built with Next.js, TypeScript, and Tail
 
 ### 🔒 **Security Features**
 
-- **Rate Limiting**: 5 requests per minute to prevent API abuse
+- **Rate Limiting**: 5 requests per minute (client-side throttle for accidental burst protection)
 - **XSS Protection**: All responses sanitized with DOMPurify
 - **CSP Headers**: Comprehensive Content Security Policy
-- **SSRF Protection**: Updated dependencies to patch vulnerabilities
 - **Secure Headers**: X-Frame-Options, X-Content-Type-Options, and more
 - **Input Validation**: URL and header sanitization
 

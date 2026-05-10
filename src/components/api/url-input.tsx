@@ -15,11 +15,7 @@ const UrlInput = ({
   className,
 }: UrlInputProps) => {
   const isValidUrl = (url: string) => {
-    // Skip validation if URL contains environment variables
-    if (url.includes('{{')) {
-      return true;
-    }
-
+    if (url.includes('{{')) return true;
     try {
       new URL(url);
       return true;
@@ -27,6 +23,8 @@ const UrlInput = ({
       return false;
     }
   };
+
+  const valid = !value || isValidUrl(value);
 
   return (
     <div className='relative'>
@@ -36,26 +34,22 @@ const UrlInput = ({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className={cn(
-          'pr-10',
-          value &&
-            !isValidUrl(value) &&
-            'border-red-500 focus-visible:ring-red-500',
+          'pr-9 font-mono',
+          !valid && 'border-[color:var(--color-method-delete-fg)]/50',
           className
         )}
       />
       {value && (
         <div className='absolute right-3 top-1/2 -translate-y-1/2'>
-          {isValidUrl(value) ? (
-            <div
-              className='w-4 h-4 bg-green-500 rounded-full'
-              title='Valid URL'
-            />
-          ) : (
-            <div
-              className='w-4 h-4 bg-red-500 rounded-full'
-              title='Invalid URL'
-            />
-          )}
+          <div
+            className={cn(
+              'w-1.5 h-1.5 rounded-full',
+              valid
+                ? 'bg-accent'
+                : 'bg-[color:var(--color-method-delete-fg)]'
+            )}
+            title={valid ? 'Valid URL' : 'Invalid URL'}
+          />
         </div>
       )}
     </div>
