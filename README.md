@@ -13,6 +13,7 @@ A modern, feature-rich API testing tool built with Next.js, TypeScript, and Tail
 - **HTTP Methods**: Support for GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS
 - **Request Builder**: Intuitive form-based request creation
 - **Response Viewer**: Beautiful JSON/XML response formatting
+- **cURL Export**: Generate and copy a ready-to-run cURL command for any request
 - **Request History**: Track and replay previous requests
 - **Saved Requests**: Save and organize your favorite requests
 
@@ -97,13 +98,11 @@ A modern, feature-rich API testing tool built with Next.js, TypeScript, and Tail
 ### Using Environment Variables
 
 1. **Create an Environment**:
-
    - Click the environment dropdown in the left sidebar
    - Click the "+" button to add a new environment
    - Name it (e.g., "Development")
 
 2. **Add Variables**:
-
    - Click the settings icon next to "Variables"
    - Add key-value pairs (e.g., `baseUrl` = `https://api.example.com`)
 

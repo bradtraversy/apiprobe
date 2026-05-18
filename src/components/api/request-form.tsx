@@ -1,8 +1,10 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Send, Save } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { Send, Save, Copy } from 'lucide-react';
+import { useState, useEffect, useMemo, type KeyboardEvent } from 'react';
+import { toast } from 'react-hot-toast';
 import { type ApiRequest, type HttpMethod } from '@/types/api';
+import { buildCurlCommand } from '@/lib/api-service';
 import MethodSelector from './method-selector';
 import UrlInput from './url-input';
 import HeadersEditor from './headers-editor';
@@ -100,7 +102,36 @@ const RequestForm = ({
     onSave?.(request);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const curlCommand = useMemo(() => {
+    if (!url.trim()) return '';
+
+    const request: ApiRequest = {
+      id: 'preview',
+      name: name || `Request to ${url}`,
+      method,
+      url: url.trim(),
+      headers: { ...headers, 'Content-Type': contentType },
+      body,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    return buildCurlCommand(request);
+  }, [name, method, url, headers, body, contentType]);
+
+  const handleCopyCurl = async () => {
+    if (!curlCommand) return;
+
+    try {
+      await navigator.clipboard.writeText(curlCommand);
+      toast.success('cURL command copied to clipboard');
+    } catch (error) {
+      console.error('Failed to copy cURL command:', error);
+      toast.error('Unable to copy cURL command');
+    }
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
       handleSend();
@@ -152,27 +183,44 @@ const RequestForm = ({
           </div>
         )}
 
-        <div className='flex gap-2 pt-2 border-t border-line'>
-          <Button
-            onClick={handleSend}
-            disabled={isLoading || !url.trim()}
-            className='gap-2'
-          >
-            <Send className='h-3.5 w-3.5' />
-            {isLoading ? 'Sending...' : 'Send Request'}
-          </Button>
-          {onSave && (
+        <div className='flex flex-col gap-3 pt-2 border-t border-line'>
+          <div className='flex flex-wrap gap-2'>
+            <Button
+              onClick={handleSend}
+              disabled={isLoading || !url.trim()}
+              className='gap-2'
+            >
+              <Send className='h-3.5 w-3.5' />
+              {isLoading ? 'Sending...' : 'Send Request'}
+            </Button>
+            {onSave && (
+              <Button
+                variant='outline'
+                onClick={handleSave}
+                disabled={!url.trim()}
+                className='gap-2'
+              >
+                <Save className='h-3.5 w-3.5' />
+                Save
+              </Button>
+            )}
             <Button
               variant='outline'
-              onClick={handleSave}
+              onClick={handleCopyCurl}
               disabled={!url.trim()}
               className='gap-2'
             >
-              <Save className='h-3.5 w-3.5' />
-              Save
+              <Copy className='h-3.5 w-3.5' />
+              Copy cURL
             </Button>
+          </div>
+          {curlCommand && (
+            <div className='bg-card border border-line rounded-md p-3 text-[11px] font-mono overflow-auto'>
+              <span className='text-fg-muted'>Generated cURL command</span>
+              <pre className='mt-2 whitespace-pre-wrap break-all'>{curlCommand}</pre>
+            </div>
           )}
-          <span className='ml-auto self-center text-xs text-fg-faint font-mono'>
+          <span className='self-end text-xs text-fg-faint font-mono'>
             ⌘ + Enter
           </span>
         </div>

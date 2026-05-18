@@ -105,3 +105,27 @@ export function validateRequest(request: ApiRequest): string | null {
 
   return null;
 }
+
+function escapeShellValue(value: string) {
+  return value
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "'\\''")
+    .replace(/\n/g, '\\n');
+}
+
+export function buildCurlCommand(request: ApiRequest): string {
+  const segments = ['curl', '-sS', '-X', request.method];
+
+  Object.entries(request.headers || {}).forEach(([key, value]) => {
+    if (key && value) {
+      segments.push('-H', `'${escapeShellValue(`${key}: ${value}`)}'`);
+    }
+  });
+
+  if (request.body && request.body.trim()) {
+    segments.push('--data-raw', `'${escapeShellValue(request.body)}'`);
+  }
+
+  segments.push(`'${escapeShellValue(request.url.trim())}'`);
+  return segments.join(' ');
+}
